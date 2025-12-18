@@ -61,12 +61,15 @@ export default function Navigation({ categories, config = defaultConfig }: Navig
       // 获取元素的位置
       const rect = element.getBoundingClientRect();
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const targetTop = rect.top + scrollTop - 100;
       
       // 滚动到元素位置，减去顶部导航栏的高度（根据实际高度调整）
-      window.scrollTo({
-        top: rect.top + scrollTop - 100,
-        behavior: 'smooth'
-      });
+      // 避免 html { scroll-behavior: smooth } 导致长距离滚动的动画，改为直接跳转
+      const root = document.documentElement;
+      const previousScrollBehavior = root.style.scrollBehavior;
+      root.style.scrollBehavior = 'auto';
+      window.scrollTo({ top: targetTop, behavior: 'auto' });
+      root.style.scrollBehavior = previousScrollBehavior;
     }
   };
 

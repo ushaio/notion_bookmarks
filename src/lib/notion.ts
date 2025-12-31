@@ -245,3 +245,75 @@ export const getCategories = cache(async () => {
     return [];
   }
 });
+
+// 添加书签到 Notion
+export interface CreateLinkInput {
+  name: string;
+  url: string;
+  desc?: string;
+  category1?: string;
+  category2?: string;
+  iconlink?: string;
+  tags?: string[];
+  isAdminOnly?: boolean;
+}
+
+export async function createLink(input: CreateLinkInput) {
+  const databaseId = envConfig.NOTION_LINKS_DB_ID!;
+  
+  try {
+    const response = await notion.pages.create({
+      parent: { database_id: databaseId },
+      properties: {
+        Name: {
+          title: [
+            {
+              text: {
+                content: input.name,
+              },
+            },
+          ],
+        },
+        URL: {
+          url: input.url,
+        },
+        desc: {
+          rich_text: input.desc ? [
+            {
+              text: {
+                content: input.desc,
+              },
+            },
+          ] : [],
+        },
+        category1: input.category1 ? {
+          select: {
+            name: input.category1,
+          },
+        } : undefined,
+        category2: input.category2 ? {
+          select: {
+            name: input.category2,
+          },
+        } : undefined,
+        iconlink: input.iconlink ? {
+          url: input.iconlink,
+        } : undefined,
+        Tags: input.tags && input.tags.length > 0 ? {
+          multi_select: input.tags.map(tag => ({ name: tag })),
+        } : undefined,
+        isAdmin: {
+          checkbox: input.isAdminOnly || false,
+        },
+      } as Record<string, unknown>,
+    });
+
+    return {
+      success: true,
+      id: response.id,
+    };
+  } catch (error) {
+    console.error('创建书签失败:', error);
+    throw error;
+  }
+}

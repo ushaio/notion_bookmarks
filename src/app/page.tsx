@@ -3,7 +3,7 @@ import LinkContainer from '@/components/layout/LinkContainer';
 import Navigation from '@/components/layout/Navigation';
 import { getLinks, getCategories, getWebsiteConfig } from '@/lib/notion';
 import Footer from '@/components/layout/Footer';
-import { SimpleTime, AnalogClock, Weather, IPInfo, HotNews } from '@/components/widgets';
+import { SimpleTime, AnalogClock, HotNews } from '@/components/widgets';
 import WidgetsContainer from '@/components/layout/WidgetsContainer';
 import React from 'react';
 
@@ -58,8 +58,8 @@ export default async function HomePage() {
   const widgetMap: Record<string, React.ReactNode> = {
     '简易时钟': <SimpleTime />,
     '圆形时钟': <AnalogClock />,
-    '天气': <Weather />,
-    'IP信息': <IPInfo />,
+    // '天气': <Weather />, // 已禁用
+    // 'IP信息': <IPInfo />, // 已禁用
     '热搜': <HotNews />,
     // 你可以继续扩展更多组件
   };

@@ -83,6 +83,9 @@ export const getLinks = cache(async () => {
                 .map((page) => {
                     const pageProps = page.properties as Record<string, unknown>;
                     
+                    // 获取isAdmin字段，checkbox类型
+                    const isAdminOnly = (pageProps.isAdmin as { checkbox?: boolean })?.checkbox || false;
+                    
                     return {
                         id: page.id,
                         name: getTitleText(pageProps.Name as TitlePropertyItemObjectResponse),
@@ -94,6 +97,7 @@ export const getLinks = cache(async () => {
                         iconfile: getFileUrl(pageProps.iconfile as FilesPropertyItemObjectResponse),
                         iconlink: (pageProps.iconlink as { url?: string })?.url || '',
                         tags: (pageProps.Tags as { multi_select?: { name: string }[] })?.multi_select?.map((tag) => tag.name) || [],
+                        isAdminOnly, // 新增：是否仅管理员可见
                     };
                 });
 

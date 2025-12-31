@@ -1,10 +1,11 @@
 // src/components/LinkContainer.tsx
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import LinkCard from "@/components/ui/LinkCard";
 import * as Icons from "lucide-react";
 import { Link, Category } from '@/types/notion';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface LinkContainerProps {
   initialLinks: Link[];
@@ -19,27 +20,40 @@ export default function LinkContainer({
 }: LinkContainerProps) {
   const [mounted, setMounted] = useState(false);
   const [currentTime, setCurrentTime] = useState<Date | null>(null);
+  const { isAdmin } = useAuth();
 
   useEffect(() => {
     setMounted(true);
     setCurrentTime(new Date());
   }, []);
-  // 按一级和二级分类组织链接，只包含启用的分类
-  const linksByCategory = initialLinks.reduce((acc, link) => {
-    const cat1 = link.category1;
-    const cat2 = link.category2;
 
-    if (enabledCategories.has(cat1)) {
-      if (!acc[cat1]) {
-        acc[cat1] = {};
-      }
-      if (!acc[cat1][cat2]) {
-        acc[cat1][cat2] = [];
-      }
-      acc[cat1][cat2].push(link);
+  // 根据管理员状态过滤链接
+  const filteredLinks = useMemo(() => {
+    if (isAdmin) {
+      // 管理员可以看到所有链接
+      return initialLinks;
     }
-    return acc;
-  }, {} as Record<string, Record<string, Link[]>>);
+    // 非管理员只能看到非管理员专属的链接
+    return initialLinks.filter(link => !link.isAdminOnly);
+  }, [initialLinks, isAdmin]);
+  // 按一级和二级分类组织链接，只包含启用的分类
+  const linksByCategory = useMemo(() => {
+    return filteredLinks.reduce((acc, link) => {
+      const cat1 = link.category1;
+      const cat2 = link.category2;
+
+      if (enabledCategories.has(cat1)) {
+        if (!acc[cat1]) {
+          acc[cat1] = {};
+        }
+        if (!acc[cat1][cat2]) {
+          acc[cat1][cat2] = [];
+        }
+        acc[cat1][cat2].push(link);
+      }
+      return acc;
+    }, {} as Record<string, Record<string, Link[]>>);
+  }, [filteredLinks, enabledCategories]);
 
   const formatDate = (date: Date) => {
     return date.toLocaleString('zh-CN', {

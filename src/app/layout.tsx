@@ -3,6 +3,7 @@ import "qweather-icons/font/qweather-icons.css"
 import "@/themes/theme.css"
 import { Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/ui/ThemeProvider"
+import { AuthProvider } from "@/contexts/AuthContext"
 import { Metadata } from "next"
 import { Clarity } from "@/components/analytics/Clarity"
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics"
@@ -75,7 +76,9 @@ export default async function RootLayout({
       </head>
       <body className={inter.className}>
         <ThemeProvider>
-          {children}
+          <AuthProvider>
+            {children}
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

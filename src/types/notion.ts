@@ -10,6 +10,7 @@ export interface Link {
     desc?: string;
     iconfile?: string;
     iconlink?: string;
+    isAdminOnly?: boolean; // 是否仅管理员可见
 }
 
 // 网站配置类型

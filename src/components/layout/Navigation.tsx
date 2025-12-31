@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { cn } from '@/lib/utils'
 import { ThemeSwitcher } from '@/components/ui/ThemeSwitcher'
+import { AuthButton } from '@/components/ui/AuthButton'
 import * as Icons from 'lucide-react'
 import { WebsiteConfig } from '@/types/notion'
 import { useTheme } from 'next-themes'
@@ -89,7 +90,10 @@ export default function Navigation({ categories, config = defaultConfig }: Navig
             <Icons.Rocket className="w-5 h-5 text-foreground" />
             <span className="neon-title">{config.SITE_TITLE}</span>
           </div>
-          {config.SHOW_THEME_SWITCHER !== 'false' && <ThemeSwitcher />}
+          <div className="flex items-center gap-2">
+            <AuthButton />
+            {config.SHOW_THEME_SWITCHER !== 'false' && <ThemeSwitcher />}
+          </div>
         </div>
         <div className="overflow-x-auto flex items-center h-12 border-t scrollbar-none">
           <div className="flex px-4 min-w-full">
@@ -119,12 +123,15 @@ export default function Navigation({ categories, config = defaultConfig }: Navig
 
       {/* 桌面端边导航 */}
       <nav className="hidden lg:block w-[280px] flex-shrink-0 h-screen sticky top-0 p-4 overflow-y-auto border-r">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-2">
             <Icons.Rocket className="w-5 h-5 text-foreground" />
             <span className="neon-title">{config.SITE_TITLE}</span>
           </div>
           {config.SHOW_THEME_SWITCHER !== 'false' && <ThemeSwitcher />}
+        </div>
+        <div className="flex items-center justify-end mb-4">
+          <AuthButton />
         </div>
         <ul className="space-y-1 pb-24">
           {categories.map((category) => {

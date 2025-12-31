@@ -1,8 +1,8 @@
 // src/components/ui/AddLinkModal.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
-import { X, Plus, Loader2 } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { X, Plus, Loader2, Search } from 'lucide-react';
 
 interface AddLinkModalProps {
   isOpen: boolean;
@@ -22,6 +22,7 @@ export function AddLinkModal({ isOpen, onClose, onSuccess, categories = [] }: Ad
     isAdminOnly: false,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState('');
 
   // 重置表单
@@ -40,6 +41,47 @@ export function AddLinkModal({ isOpen, onClose, onSuccess, categories = [] }: Ad
     }
   }, [isOpen, categories]);
 
+  // 获取网站元数据
+  const fetchMeta = useCallback(async (url: string) => {
+    if (!url || isFetching) return;
+    
+    try {
+      new URL(url);
+    } catch {
+      return; // URL 格式不正确，不获取
+    }
+
+    setIsFetching(true);
+    try {
+      const response = await fetch('/api/fetch-meta', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setFormData(prev => ({
+          ...prev,
+          name: prev.name || data.title || '',
+          iconlink: prev.iconlink || data.icon || '',
+        }));
+      }
+    } catch (err) {
+      console.error('获取网站信息失败:', err);
+    } finally {
+      setIsFetching(false);
+    }
+  }, [isFetching]);
+
+  // URL 输入失焦时自动获取
+  const handleUrlBlur = () => {
+    if (formData.url && !formData.name) {
+      fetchMeta(formData.url);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -48,9 +90,7 @@ export function AddLinkModal({ isOpen, onClose, onSuccess, categories = [] }: Ad
     try {
       const response = await fetch('/api/links', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
 
@@ -74,35 +114,53 @@ export function AddLinkModal({ isOpen, onClose, onSuccess, categories = [] }: Ad
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* 背景遮罩 */}
-      <div 
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
       
-      {/* 模态框 */}
       <div className="relative bg-background rounded-lg shadow-xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
-        {/* 头部 */}
         <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-lg font-semibold flex items-center gap-2">
             <Plus className="w-5 h-5" />
             添加书签
           </h2>
-          <button
-            onClick={onClose}
-            className="p-1 rounded-lg hover:bg-accent transition-colors"
-          >
+          <button onClick={onClose} className="p-1 rounded-lg hover:bg-accent transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* 表单 */}
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
           {error && (
             <div className="p-3 text-sm text-red-600 bg-red-50 dark:bg-red-900/20 rounded-lg">
               {error}
             </div>
           )}
+
+          {/* URL - 放在最前面 */}
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              URL <span className="text-red-500">*</span>
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="url"
+                value={formData.url}
+                onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+                onBlur={handleUrlBlur}
+                className="flex-1 px-3 py-2 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                placeholder="https://example.com"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => fetchMeta(formData.url)}
+                disabled={isFetching || !formData.url}
+                className="px-3 py-2 border rounded-lg hover:bg-accent transition-colors disabled:opacity-50"
+                title="获取网站信息"
+              >
+                {isFetching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+              </button>
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">输入 URL 后点击搜索按钮自动获取名称和图标</p>
+          </div>
 
           {/* 名称 */}
           <div>
@@ -119,19 +177,26 @@ export function AddLinkModal({ isOpen, onClose, onSuccess, categories = [] }: Ad
             />
           </div>
 
-          {/* URL */}
+          {/* 图标链接 */}
           <div>
-            <label className="block text-sm font-medium mb-1">
-              URL <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="url"
-              value={formData.url}
-              onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-              className="w-full px-3 py-2 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
-              placeholder="https://example.com"
-              required
-            />
+            <label className="block text-sm font-medium mb-1">图标链接</label>
+            <div className="flex gap-2 items-center">
+              {formData.iconlink && (
+                <img 
+                  src={formData.iconlink} 
+                  alt="icon" 
+                  className="w-8 h-8 rounded object-contain bg-white"
+                  onError={(e) => (e.currentTarget.style.display = 'none')}
+                />
+              )}
+              <input
+                type="url"
+                value={formData.iconlink}
+                onChange={(e) => setFormData({ ...formData, iconlink: e.target.value })}
+                className="flex-1 px-3 py-2 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                placeholder="https://example.com/icon.png"
+              />
+            </div>
           </div>
 
           {/* 描述 */}
@@ -156,9 +221,7 @@ export function AddLinkModal({ isOpen, onClose, onSuccess, categories = [] }: Ad
             >
               <option value="">选择分类</option>
               {categories.map((cat) => (
-                <option key={cat.name} value={cat.name}>
-                  {cat.name}
-                </option>
+                <option key={cat.name} value={cat.name}>{cat.name}</option>
               ))}
             </select>
           </div>
@@ -175,18 +238,6 @@ export function AddLinkModal({ isOpen, onClose, onSuccess, categories = [] }: Ad
             />
           </div>
 
-          {/* 图标链接 */}
-          <div>
-            <label className="block text-sm font-medium mb-1">图标链接</label>
-            <input
-              type="url"
-              value={formData.iconlink}
-              onChange={(e) => setFormData({ ...formData, iconlink: e.target.value })}
-              className="w-full px-3 py-2 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
-              placeholder="https://example.com/icon.png"
-            />
-          </div>
-
           {/* 仅管理员可见 */}
           <div className="flex items-center gap-2">
             <input
@@ -196,9 +247,7 @@ export function AddLinkModal({ isOpen, onClose, onSuccess, categories = [] }: Ad
               onChange={(e) => setFormData({ ...formData, isAdminOnly: e.target.checked })}
               className="w-4 h-4 rounded border-gray-300"
             />
-            <label htmlFor="isAdminOnly" className="text-sm">
-              仅管理员可见
-            </label>
+            <label htmlFor="isAdminOnly" className="text-sm">仅管理员可见</label>
           </div>
 
           {/* 提交按钮 */}
@@ -216,15 +265,9 @@ export function AddLinkModal({ isOpen, onClose, onSuccess, categories = [] }: Ad
               className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  添加中...
-                </>
+                <><Loader2 className="w-4 h-4 animate-spin" />添加中...</>
               ) : (
-                <>
-                  <Plus className="w-4 h-4" />
-                  添加
-                </>
+                <><Plus className="w-4 h-4" />添加</>
               )}
             </button>
           </div>

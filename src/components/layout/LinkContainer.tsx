@@ -149,20 +149,19 @@ function ListLinkItem({ link, className }: { link: Link; className?: string }) {
       href={link.url}
       target="_blank"
       rel="noopener noreferrer"
-      whileHover={{ x: 4, backgroundColor: 'hsl(var(--muted) / 0.5)' }}
+      whileHover={{ x: 2, backgroundColor: 'hsl(var(--muted) / 0.3)' }}
       className={cn(
-        "flex items-center gap-2.5 py-1.5 px-2 rounded-md",
+        "flex items-center gap-2 py-1 px-1.5 rounded",
         "transition-all duration-150 group",
-        "border-b border-border/10 last:border-b-0",
         className
       )}
     >
       {/* 图标 */}
-      <div className="w-5 h-5 rounded flex items-center justify-center flex-shrink-0 overflow-hidden">
+      <div className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0 overflow-hidden">
         <img
           src={iconUrl}
           alt=""
-          className="w-4 h-4 object-contain"
+          className="w-3.5 h-3.5 object-contain"
           onError={(e) => {
             (e.target as HTMLImageElement).src = '/globe.svg';
           }}
@@ -170,20 +169,61 @@ function ListLinkItem({ link, className }: { link: Link; className?: string }) {
       </div>
       
       {/* 名称 */}
-      <span className="flex-1 text-sm text-foreground truncate group-hover:text-primary transition-colors">
+      <span className="flex-1 text-xs text-foreground truncate group-hover:text-primary transition-colors leading-tight">
         {link.name}
       </span>
       
-      {/* 描述（可选） */}
-      {link.desc && (
-        <span className="hidden lg:block text-xs text-muted-foreground truncate max-w-[250px]">
-          {link.desc}
-        </span>
-      )}
-      
       {/* 外链图标 */}
-      <ExternalLink className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+      <ExternalLink className="w-2.5 h-2.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
     </motion.a>
+  );
+}
+
+// 列表模式的分类卡片组件（用于多栏布局）
+interface ListCategoryCardProps {
+  subCategory: string;
+  links: Link[];
+  categoryId: string;
+}
+
+function ListCategoryCard({ subCategory, links, categoryId }: ListCategoryCardProps) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className={cn(
+        "break-inside-avoid mb-3",
+        "bg-card/40 backdrop-blur-sm rounded-lg",
+        "border border-border/30 hover:border-primary/20",
+        "transition-all duration-200 hover:shadow-md",
+        "overflow-hidden"
+      )}
+    >
+      {/* 子分类标题 */}
+      <div className={cn(
+        "px-3 py-2",
+        "bg-muted/30 border-b border-border/20",
+        "flex items-center gap-2"
+      )}>
+        <div className="w-1.5 h-1.5 rounded-full bg-primary/60"></div>
+        <h4
+          className="text-sm font-medium text-foreground/90 flex-1 truncate"
+          style={{ fontFamily: 'var(--font-display)' }}
+        >
+          {subCategory}
+        </h4>
+        <span className="text-[10px] text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded-full">
+          {links.length}
+        </span>
+      </div>
+      
+      {/* 链接列表 */}
+      <div className="p-2 space-y-0.5">
+        {links.map((link) => (
+          <ListLinkItem key={link.id} link={link} />
+        ))}
+      </div>
+    </motion.div>
   );
 }
 
@@ -288,7 +328,8 @@ export default function LinkContainer({
       case 'compact':
         return "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2";
       case 'list':
-        return "flex flex-col";
+        // 列表模式使用 CSS columns 实现多栏瀑布流
+        return "columns-1 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 2xl:columns-6 gap-3";
       default:
         return "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4";
     }
@@ -300,7 +341,7 @@ export default function LinkContainer({
       case 'compact':
         return "space-y-8";
       case 'list':
-        return "space-y-6";
+        return "space-y-4";
       default:
         return "space-y-16";
     }
@@ -353,68 +394,70 @@ export default function LinkContainer({
               linkCount={linkCount}
             />
 
-            {/* 子分类 */}
-            <div className={cn(viewMode === 'compact' ? "space-y-6" : viewMode === 'list' ? "space-y-4" : "space-y-10", "pt-2")}>
-              {Object.entries(categoryLinks).map(([subCategory, links], subIndex) => (
-                <motion.div
-                  key={`${category.id}-${subCategory.toLowerCase().replace(/\s+/g, "-")}`}
-                  id={`${category.id}-${subCategory.toLowerCase().replace(/\s+/g, "-")}`}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: subIndex * 0.05 }}
-                  className={cn(viewMode === 'compact' ? "space-y-2" : viewMode === 'list' ? "space-y-1" : "space-y-4")}
-                >
-                  {/* 子分类标题 */}
-                  <div className={cn(
-                    "flex items-center gap-3",
-                    viewMode === 'list' ? "pl-1" : "pl-2"
-                  )}>
-                    <div className={cn(
-                      "rounded-full bg-primary/60",
-                      viewMode === 'list' ? "w-1 h-1" : "w-1.5 h-1.5"
-                    )}></div>
-                    <h3
-                      className={cn(
-                        "font-medium text-foreground/90",
-                        viewMode === 'compact' ? "text-base" : viewMode === 'list' ? "text-sm" : "text-lg"
-                      )}
-                      style={{ fontFamily: 'var(--font-display)' }}
-                    >
-                      {subCategory}
-                    </h3>
-                    <div className={cn(
-                      "text-muted-foreground bg-muted/30 rounded-full",
-                      viewMode === 'list' ? "text-[10px] px-1.5 py-0" : "text-xs px-2 py-0.5"
-                    )}>
-                      {links.length}
-                    </div>
-                    <div className="flex-1 h-px bg-gradient-to-r from-border/50 to-transparent"></div>
-                  </div>
-                  
-                  {/* 链接卡片 - 根据视图模式渲染不同组件 */}
-                  <div className={cn(getGridClassName(), "w-full")}>
-                    {links.map((link, linkIndex) => (
-                      <motion.div
-                        key={link.id}
-                        initial={{ opacity: 0, scale: viewMode === 'list' ? 1 : 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: linkIndex * (viewMode === 'list' ? 0.01 : 0.03) }}
+            {/* 列表模式：多栏多分类瀑布流布局 */}
+            {viewMode === 'list' ? (
+              <div className={cn(getGridClassName(), "pt-2")}>
+                {Object.entries(categoryLinks).map(([subCategory, links], subIndex) => (
+                  <ListCategoryCard
+                    key={`${category.id}-${subCategory.toLowerCase().replace(/\s+/g, "-")}`}
+                    subCategory={subCategory}
+                    links={links}
+                    categoryId={category.id}
+                  />
+                ))}
+              </div>
+            ) : (
+              /* 普通模式和紧凑模式：按子分类分组显示 */
+              <div className={cn(viewMode === 'compact' ? "space-y-6" : "space-y-10", "pt-2")}>
+                {Object.entries(categoryLinks).map(([subCategory, links], subIndex) => (
+                  <motion.div
+                    key={`${category.id}-${subCategory.toLowerCase().replace(/\s+/g, "-")}`}
+                    id={`${category.id}-${subCategory.toLowerCase().replace(/\s+/g, "-")}`}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: subIndex * 0.05 }}
+                    className={cn(viewMode === 'compact' ? "space-y-2" : "space-y-4")}
+                  >
+                    {/* 子分类标题 */}
+                    <div className="flex items-center gap-3 pl-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary/60"></div>
+                      <h3
+                        className={cn(
+                          "font-medium text-foreground/90",
+                          viewMode === 'compact' ? "text-base" : "text-lg"
+                        )}
+                        style={{ fontFamily: 'var(--font-display)' }}
                       >
-                        {viewMode === 'normal' && (
-                          <LinkCard link={link} className="w-full h-full" />
-                        )}
-                        {viewMode === 'compact' && (
-                          <CompactLinkCard link={link} />
-                        )}
-                        {viewMode === 'list' && (
-                          <ListLinkItem link={link} />
-                        )}
-                      </motion.div>
-                    ))}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+                        {subCategory}
+                      </h3>
+                      <div className="text-xs text-muted-foreground bg-muted/30 rounded-full px-2 py-0.5">
+                        {links.length}
+                      </div>
+                      <div className="flex-1 h-px bg-gradient-to-r from-border/50 to-transparent"></div>
+                    </div>
+                    
+                    {/* 链接卡片 - 根据视图模式渲染不同组件 */}
+                    <div className={cn(getGridClassName(), "w-full")}>
+                      {links.map((link, linkIndex) => (
+                        <motion.div
+                          key={link.id}
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: linkIndex * 0.03 }}
+                        >
+                          {viewMode === 'normal' && (
+                            <LinkCard link={link} className="w-full h-full" />
+                          )}
+                          {viewMode === 'compact' && (
+                            <CompactLinkCard link={link} />
+                          )}
+                        </motion.div>
+                      ))}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
           </motion.section>
         );
       })}

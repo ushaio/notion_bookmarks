@@ -33,22 +33,22 @@ function ViewModeToggle({
   ];
 
   return (
-    <div className="flex items-center gap-1 p-1 rounded-lg bg-muted/50 border border-border/50">
+    <div className="flex items-center gap-1 p-1.5 rounded-2xl bg-secondary/50 border border-border/50 backdrop-blur-sm">
       {modes.map(({ mode, icon, label }) => (
         <motion.button
           key={mode}
           onClick={() => onChange(mode)}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           className={cn(
-            "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200",
+            "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300",
             viewMode === mode
-              ? "bg-background text-foreground shadow-sm border border-border/50"
-              : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+              ? "bg-card text-primary shadow-lg shadow-black/5 border border-border/50"
+              : "text-muted-foreground hover:text-foreground hover:bg-card/30"
           )}
         >
           {icon}
-          <span className="hidden sm:inline">{label}</span>
+          <span className="hidden md:inline">{label}</span>
         </motion.button>
       ))}
     </div>
@@ -101,13 +101,19 @@ export default function ContentArea({
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="w-full px-4 lg:px-6 py-6"
+        className="w-full px-4 lg:px-6 py-12"
       >
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-          <div className="flex-1">
+        <div className="flex flex-col items-center gap-8">
+          <div className="w-full max-w-4xl">
             <SearchBox onBookmarkSearch={handleBookmarkSearch} />
           </div>
-          <ViewModeToggle viewMode={viewMode} onChange={handleViewModeChange} />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            <ViewModeToggle viewMode={viewMode} onChange={handleViewModeChange} />
+          </motion.div>
         </div>
       </motion.div>
       

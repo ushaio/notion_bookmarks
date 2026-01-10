@@ -118,40 +118,40 @@ export default function LinkCard({ link, className }: LinkCardProps) {
         whileTap={{ scale: 0.98 }}
         transition={{ duration: 0.3 }}
         className={cn(
-          "group relative block p-4 rounded-xl overflow-hidden",
+          "group relative block p-5 rounded-2xl overflow-hidden",
           "bg-card border border-border/40",
-          "hover:border-primary/40 hover:shadow-lg",
-          "transition-all duration-300",
+          "hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/5",
+          "transition-all duration-500 ease-smooth",
           "w-full max-w-full",
           className
         )}
       >
-        {/* 水墨晕染背景效果 */}
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-primary/5 to-transparent rounded-full blur-2xl"></div>
-          <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-secondary/5 to-transparent rounded-full blur-xl"></div>
+        {/* 现代感背景装饰 */}
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+          <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/5 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-accent/5 rounded-full blur-2xl"></div>
         </div>
 
-        {/* 顶部装饰线 */}
-        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/0 to-transparent group-hover:via-primary/60 transition-all duration-500"></div>
+        {/* 悬浮时的边框发光效果 */}
+        <div className="absolute inset-0 border border-primary/0 group-hover:border-primary/20 rounded-2xl transition-colors duration-500"></div>
 
         {/* 内容容器 */}
-        <div className="relative flex flex-col h-full gap-3">
+        <div className="relative flex flex-col h-full gap-4">
           {/* 图标和名称行 */}
-          <div className="flex items-start gap-3">
-            {/* 图标容器 - 印章风格 */}
-            <motion.div 
+          <div className="flex items-center gap-4">
+            {/* 图标容器 - 现代圆角矩形 */}
+            <motion.div
               className="relative shrink-0"
-              whileHover={{ rotate: 3 }}
-              transition={{ type: "spring", stiffness: 400 }}
+              whileHover={{ scale: 1.1, rotate: -5 }}
+              transition={{ type: "spring", stiffness: 300, damping: 15 }}
             >
-              <div className="w-12 h-12 rounded-lg overflow-hidden bg-muted/50 border border-border/50 p-1.5 group-hover:border-primary/30 transition-colors duration-300">
+              <div className="w-14 h-14 rounded-2xl overflow-hidden bg-secondary/50 border border-border/50 p-2.5 group-hover:border-primary/20 transition-all duration-500 group-hover:shadow-inner">
                 <div className="relative w-full h-full">
                   <img
                     ref={imgRef}
                     alt="Site Icon"
                     className={cn(
-                      "w-full h-full object-contain transition-all duration-300",
+                      "w-full h-full object-contain transition-all duration-500",
                       imageLoaded ? "opacity-100" : "opacity-0",
                       "group-hover:scale-110"
                     )}
@@ -161,48 +161,53 @@ export default function LinkCard({ link, className }: LinkCardProps) {
                   />
                   {!imageLoaded && (
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-5 h-5 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                      <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
                     </div>
                   )}
                 </div>
               </div>
-              {/* 印章角标 */}
-              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-primary/10 rounded-sm rotate-12 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </motion.div>
             
             {/* 网站名称 */}
-            <div className="flex-1 min-w-0 pt-1">
-              <div 
+            <div className="flex-1 min-w-0">
+              <div
                 className="relative"
                 onMouseEnter={(e) => handleMouseEnter(e, setTitleTooltip)}
                 onMouseLeave={() => handleMouseLeave(setTitleTooltip)}
               >
-                <h3 
-                  className="text-base font-semibold text-foreground group-hover:text-primary transition-colors duration-300 line-clamp-1 pr-6"
+                <h3
+                  className="text-lg font-bold text-foreground group-hover:text-primary transition-colors duration-300 line-clamp-1 pr-6 tracking-tight"
                   style={{ fontFamily: 'var(--font-display)' }}
                 >
                   {link.name}
                 </h3>
               </div>
               
-              {/* 外链图标 */}
-              <div className="absolute right-4 top-4">
-                <IconExternalLink 
-                  className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" 
+              {/* 链接预览小字 */}
+              <p className="text-[10px] text-muted-foreground/60 truncate font-mono mt-0.5">
+                {link.url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]}
+              </p>
+            </div>
+
+            {/* 外链图标 - 更加精致 */}
+            <div className="shrink-0">
+              <div className="w-8 h-8 rounded-full bg-secondary/0 group-hover:bg-primary/10 flex items-center justify-center transition-all duration-500">
+                <IconExternalLink
+                  className="w-4 h-4 text-muted-foreground group-hover:text-primary opacity-40 group-hover:opacity-100 transition-all duration-500"
                 />
               </div>
             </div>
           </div>
 
-          {/* 描述行 */}
+          {/* 描述行 - 优化排版 */}
           {link.desc && (
-            <div 
+            <div
               className="flex-1"
               onMouseEnter={(e) => handleMouseEnter(e, setDescTooltip)}
               onMouseLeave={() => handleMouseLeave(setDescTooltip)}
             >
-              <p 
-                className="text-sm text-muted-foreground group-hover:text-foreground/80 line-clamp-2 transition-colors duration-300 leading-relaxed"
+              <p
+                className="text-sm text-muted-foreground/80 group-hover:text-foreground/90 line-clamp-2 transition-colors duration-300 leading-relaxed"
                 style={{ fontFamily: 'var(--font-body)' }}
               >
                 {link.desc}
@@ -210,38 +215,34 @@ export default function LinkCard({ link, className }: LinkCardProps) {
             </div>
           )}
 
-          {/* 标签行 - 水墨标签风格 */}
+          {/* 标签行 - 现代胶囊风格 */}
           {link.tags && link.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 pt-1">
-              {link.tags.slice(0, 3).map((tag, index) => (
+            <div className="flex flex-wrap gap-2 pt-1">
+              {link.tags.slice(0, 2).map((tag, index) => (
                 <motion.span
                   key={tag}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: index * 0.05 }}
+                  initial={{ opacity: 0, x: -5 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
                   className={cn(
-                    "inline-flex items-center px-2 py-0.5 text-xs rounded-md",
-                    "bg-muted/60 text-muted-foreground",
-                    "group-hover:bg-primary/10 group-hover:text-primary/90",
-                    "transition-all duration-300 border border-transparent",
-                    "group-hover:border-primary/20"
+                    "inline-flex items-center px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg",
+                    "bg-secondary text-muted-foreground/70",
+                    "group-hover:bg-primary/10 group-hover:text-primary",
+                    "transition-all duration-500 border border-transparent",
+                    "group-hover:border-primary/10"
                   )}
-                  title={tag}
                 >
-                  <span className="truncate max-w-[80px]">{tag}</span>
+                  {tag}
                 </motion.span>
               ))}
-              {link.tags.length > 3 && (
-                <span className="inline-flex items-center px-2 py-0.5 text-xs rounded-md bg-muted/60 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary/90 transition-all duration-300">
-                  +{link.tags.length - 3}
+              {link.tags.length > 2 && (
+                <span className="inline-flex items-center px-2 py-1 text-[10px] font-bold rounded-lg bg-secondary text-muted-foreground/50 group-hover:text-primary/60 transition-colors duration-500">
+                  +{link.tags.length - 2}
                 </span>
               )}
             </div>
           )}
         </div>
-
-        {/* 底部装饰 - 毛笔笔触 */}
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent group-hover:w-3/4 transition-all duration-500"></div>
       </motion.a>
 
       {/* 提示框 */}

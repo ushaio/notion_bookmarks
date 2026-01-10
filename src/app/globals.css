@@ -7,52 +7,57 @@
 
 @layer base {
   :root {
-    /* 禅意浅色主题变量 */
-    --background: 40 20% 98%;
-    --foreground: 220 15% 15%;
-    --card: 40 25% 99%;
-    --card-foreground: 220 15% 15%;
-    --popover: 40 20% 99%;
-    --popover-foreground: 220 15% 15%;
-    --primary: 5 75% 50%;
-    --primary-foreground: 40 20% 98%;
-    --secondary: 165 35% 45%;
-    --secondary-foreground: 40 20% 98%;
-    --muted: 40 15% 94%;
-    --muted-foreground: 220 10% 45%;
-    --accent: 40 30% 92%;
-    --accent-foreground: 220 15% 15%;
-    --destructive: 0 70% 55%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 220 10% 85%;
-    --input: 40 15% 96%;
-    --ring: 5 75% 50%;
-    --radius: 1rem;
-    --highlight-bg: rgba(0, 0, 0, 0.03);
+    /* 现代精致浅色主题 - 提高对比度与通透感 */
+    --background: 210 20% 98%;
+    --foreground: 224 71% 4%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 71% 4%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71% 4%;
+    --primary: 262 83% 58%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 224 71% 4%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 8% 46%;
+    --accent: 262 83% 58%;
+    --accent-foreground: 210 20% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 262 83% 58%;
+    --radius: 0.75rem;
+    
+    /* Bento 风格阴影 */
+    --shadow-bento: 0 2px 4px rgba(0,0,0,0.02), 0 10px 20px rgba(0,0,0,0.04);
+    --shadow-bento-hover: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.03), 0 20px 40px rgba(0,0,0,0.08);
   }
 
   .dark {
-    /* 禅意深色主题变量 */
-    --background: 220 20% 8%;
-    --foreground: 40 15% 92%;
-    --card: 220 18% 11%;
-    --card-foreground: 40 15% 92%;
-    --popover: 220 18% 10%;
-    --popover-foreground: 40 15% 92%;
-    --primary: 5 65% 55%;
-    --primary-foreground: 40 15% 95%;
-    --secondary: 165 30% 40%;
-    --secondary-foreground: 40 15% 95%;
-    --muted: 220 15% 14%;
-    --muted-foreground: 40 10% 60%;
-    --accent: 220 15% 16%;
-    --accent-foreground: 40 15% 92%;
-    --destructive: 0 60% 50%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 220 15% 20%;
-    --input: 220 15% 14%;
-    --ring: 5 65% 55%;
-    --highlight-bg: rgba(255, 255, 255, 0.03);
+    /* 现代精致深色主题 - 极客感与层次感 */
+    --background: 224 71% 4%;
+    --foreground: 213 31% 91%;
+    --card: 224 71% 6%;
+    --card-foreground: 213 31% 91%;
+    --popover: 224 71% 6%;
+    --popover-foreground: 213 31% 91%;
+    --primary: 263 70% 50%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 215 27% 16%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 215 27% 16%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 263 70% 50%;
+    --accent-foreground: 210 20% 98%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 215 27% 16%;
+    --input: 215 27% 16%;
+    --ring: 263 70% 50%;
+    
+    --shadow-bento: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+    --shadow-bento-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
   }
 }
 
@@ -233,6 +238,24 @@ section {
    工具类
    ======================================== */
 @layer utilities {
+  .bento-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+  }
+
+  .bento-card {
+    @apply bg-card border rounded-xl transition-all duration-300;
+    border-color: hsl(var(--border) / 0.5);
+    box-shadow: var(--shadow-bento);
+  }
+
+  .bento-card:hover {
+    @apply border-primary/30;
+    box-shadow: var(--shadow-bento-hover);
+    transform: translateY(-2px);
+  }
+
   .animate-fade-in {
     animation: fadeIn 0.5s ease-out forwards;
   }
@@ -262,27 +285,12 @@ section {
   
   /* 渐变文字 */
   .text-gradient {
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    @apply bg-clip-text text-transparent bg-gradient-to-br from-primary via-primary/80 to-accent;
   }
   
   /* 玻璃态效果 */
   .glass {
-    background: hsl(var(--card) / 0.8);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-  }
-  
-  /* 水墨晕染边框 */
-  .border-ink {
-    border-image: linear-gradient(
-      135deg,
-      hsl(var(--primary) / 0.3),
-      transparent 50%,
-      hsl(var(--secondary) / 0.3)
-    ) 1;
+    @apply bg-background/60 backdrop-blur-xl border border-white/10 dark:border-white/5;
   }
   
   /* 骨架屏加载效果 */

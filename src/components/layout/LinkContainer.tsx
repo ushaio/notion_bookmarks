@@ -35,53 +35,47 @@ function StickyCategoryHeader({ category, linkCount }: StickyCategoryHeaderProps
   return (
     <div
       className={cn(
-        // 粘性定位核心
         "sticky z-20",
-        // 移动端顶部偏移（考虑导航栏高度），PC端从顶部开始
         "top-[112px] lg:top-0",
-        // 背景和视觉效果
-        "bg-background/95 backdrop-blur-md",
-        // 边距调整，让背景延伸到边缘
+        "bg-background/80 backdrop-blur-xl",
         "-mx-4 px-4 lg:-mx-6 lg:px-6",
-        // 内边距
-        "py-4",
-        // 底部边框
-        "border-b border-transparent",
-        // 过渡效果
-        "transition-all duration-200"
+        "py-6 mb-4",
+        "border-b border-border/10",
+        "transition-all duration-300"
       )}
-      style={{
-        // 使用 CSS 变量控制粘性状态的样式变化
-        // 当元素处于粘性状态时，浏览器会自动应用这些样式
-      }}
     >
-      <div className="flex items-center gap-4">
-        {/* 图标 */}
-        <motion.div
-          whileHover={{ scale: 1.05, rotate: 3 }}
-          className={cn(
-            "w-10 h-10 rounded-xl flex items-center justify-center",
-            "bg-primary/10 text-primary border border-primary/20",
-            "shadow-sm"
-          )}
-        >
-          <IconComponent className="w-5 h-5" />
-        </motion.div>
-        
-        {/* 标题文字 */}
-        <div className="flex-1 min-w-0">
-          <h2
-            className="text-2xl font-bold tracking-wide text-foreground truncate"
-            style={{ fontFamily: 'var(--font-display)' }}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <motion.div
+            whileHover={{ scale: 1.1, rotate: 5 }}
+            className={cn(
+              "w-12 h-12 rounded-2xl flex items-center justify-center",
+              "bg-primary/10 text-primary border border-primary/20",
+              "shadow-[0_0_20px_rgba(var(--primary),0.1)]"
+            )}
           >
-            {category.name}
-          </h2>
-          <div className="mt-1 h-[2px] w-16 bg-gradient-to-r from-primary to-transparent rounded-full"></div>
+            <IconComponent className="w-6 h-6" />
+          </motion.div>
+          
+          <div className="flex flex-col">
+            <h2
+              className="text-2xl font-black tracking-tight text-foreground"
+              style={{ fontFamily: 'var(--font-display)' }}
+            >
+              {category.name}
+            </h2>
+            <div className="flex items-center gap-2 mt-1">
+              <div className="h-1 w-8 bg-primary rounded-full"></div>
+              <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">
+                Category Section
+              </span>
+            </div>
+          </div>
         </div>
         
-        {/* 链接数量 */}
-        <div className="text-sm text-muted-foreground px-3 py-1 rounded-full bg-muted/50 whitespace-nowrap">
-          {linkCount} 个书签
+        <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-secondary/50 border border-border/50 backdrop-blur-sm">
+          <span className="text-sm font-bold text-primary">{linkCount}</span>
+          <span className="text-xs text-muted-foreground font-medium">Bookmarks</span>
         </div>
       </div>
     </div>
@@ -326,12 +320,11 @@ export default function LinkContainer({
   const getGridClassName = () => {
     switch (viewMode) {
       case 'compact':
-        return "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2";
+        return "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-3";
       case 'list':
-        // 列表模式使用 CSS columns 实现多栏瀑布流
-        return "columns-1 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 2xl:columns-6 gap-3";
+        return "columns-1 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 2xl:columns-6 gap-4";
       default:
-        return "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4";
+        return "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-5";
     }
   };
 

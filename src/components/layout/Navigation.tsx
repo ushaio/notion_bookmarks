@@ -79,92 +79,77 @@ export default function Navigation({ categories, config = defaultConfig }: Navig
 
   return (
     <>
-      {/* 移动端顶部导航 - 禅意风格 */}
-      <nav className="lg:hidden fixed top-0 left-0 right-0 z-20 bg-background/95 backdrop-blur-md border-b border-border/50">
+      {/* 移动端顶部导航 - 现代精致风格 */}
+      <nav className="lg:hidden fixed top-0 left-0 right-0 z-30 bg-background/80 backdrop-blur-xl border-b border-border/50">
         {/* 顶部栏 */}
-        <div className="flex items-center justify-between px-4 h-14">
+        <div className="flex items-center justify-between px-6 h-16">
           <div className="flex items-center gap-3">
-            {/* 印章风格Logo */}
-            <div className="relative w-8 h-8 flex items-center justify-center">
-              <div className="absolute inset-0 border-2 border-primary rounded-sm rotate-3"></div>
-              <span className="text-primary font-bold text-sm" style={{ fontFamily: 'var(--font-display)' }}>
-                {config.SITE_TITLE?.charAt(0) || '禅'}
+            <div className="relative w-9 h-9 flex items-center justify-center bg-primary rounded-xl shadow-lg shadow-primary/20">
+              <span className="text-primary-foreground font-black text-lg">
+                {config.SITE_TITLE?.charAt(0) || 'B'}
               </span>
             </div>
-            <span className="neon-title text-base">{config.SITE_TITLE}</span>
+            <span className="text-lg font-black tracking-tighter">{config.SITE_TITLE}</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <AuthButton />
             {config.SHOW_THEME_SWITCHER !== 'false' && <ThemeSwitcher />}
           </div>
         </div>
         
-        {/* 分类滚动条 - 水墨风格 */}
-        <div className="relative overflow-x-auto scrollbar-none border-t border-border/30">
-          <div className="flex items-center h-11 px-4 gap-2">
+        {/* 分类滚动条 */}
+        <div className="relative overflow-x-auto scrollbar-none border-t border-border/10">
+          <div className="flex items-center h-12 px-4 gap-2">
             {categories.map((category, index) => (
-              <motion.button
+              <button
                 key={category.id}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
                 onClick={() => handleNavClick(category.id)}
                 className={cn(
-                  "relative whitespace-nowrap px-4 py-1.5 text-sm rounded-full transition-all duration-300 shrink-0",
-                  "font-medium tracking-wide",
+                  "relative whitespace-nowrap px-5 py-1.5 text-xs font-bold uppercase tracking-widest rounded-full transition-all duration-300 shrink-0",
                   activeCategory === category.id
-                    ? "bg-primary text-primary-foreground shadow-md"
-                    : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                    ? "text-primary"
+                    : "text-muted-foreground hover:text-foreground"
                 )}
-                style={{ fontFamily: 'var(--font-display)' }}
               >
                 {category.name}
                 {activeCategory === category.id && (
                   <motion.div
-                    layoutId="activeTab"
-                    className="absolute inset-0 bg-primary rounded-full -z-10"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    layoutId="activeTabMobile"
+                    className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 bg-primary rounded-full"
                   />
                 )}
-              </motion.button>
+              </button>
             ))}
           </div>
-          {/* 渐变遮罩 */}
-          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-background to-transparent pointer-events-none"></div>
         </div>
       </nav>
 
-      {/* 桌面端侧边导航 - 禅意风格 */}
-      <nav className="hidden lg:flex flex-col w-[280px] flex-shrink-0 h-screen sticky top-0 border-r border-border/50 bg-background/80 backdrop-blur-sm">
+      {/* 桌面端侧边导航 - 现代精致风格 */}
+      <nav className="hidden lg:flex flex-col w-[280px] flex-shrink-0 h-screen sticky top-0 border-r border-border/50 bg-card/30 backdrop-blur-xl">
         {/* 顶部Logo区域 */}
-        <div className="p-6 border-b border-border/30">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              {/* 印章风格Logo */}
-              <motion.div 
-                className="relative w-10 h-10 flex items-center justify-center"
-                whileHover={{ rotate: 5, scale: 1.05 }}
-                transition={{ type: "spring", stiffness: 400 }}
+        <div className="p-8">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-4">
+              <motion.div
+                className="relative w-12 h-12 flex items-center justify-center bg-primary rounded-2xl shadow-xl shadow-primary/20"
+                whileHover={{ scale: 1.05, rotate: -5 }}
               >
-                <div className="absolute inset-0 border-2 border-primary rounded-sm rotate-3"></div>
-                <div className="absolute inset-0 border border-primary/30 rounded-sm -rotate-2"></div>
-                <span className="text-primary font-bold text-lg" style={{ fontFamily: 'var(--font-display)' }}>
-                  {config.SITE_TITLE?.charAt(0) || '禅'}
+                <span className="text-primary-foreground font-black text-2xl">
+                  {config.SITE_TITLE?.charAt(0) || 'B'}
                 </span>
               </motion.div>
               <div>
-                <h1 className="neon-title text-lg leading-tight">{config.SITE_TITLE}</h1>
-                <p className="text-xs text-muted-foreground mt-0.5" style={{ fontFamily: 'var(--font-display)' }}>
-                  书签导航
+                <h1 className="text-xl font-black tracking-tighter leading-none">{config.SITE_TITLE}</h1>
+                <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground mt-1.5">
+                  Dashboard
                 </p>
               </div>
             </div>
-            {config.SHOW_THEME_SWITCHER !== 'false' && <ThemeSwitcher />}
           </div>
           
-          {/* 认证按钮 */}
-          <div className="mt-4 flex justify-end">
+          <div className="flex items-center justify-between p-2 rounded-2xl bg-secondary/50 border border-border/50">
             <AuthButton />
+            {config.SHOW_THEME_SWITCHER !== 'false' && <ThemeSwitcher />}
           </div>
         </div>
 
@@ -190,27 +175,26 @@ export default function Navigation({ categories, config = defaultConfig }: Navig
                     <button
                       onClick={() => toggleCategory(category.id)}
                       className={cn(
-                        "group w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-300",
+                        "group w-full flex items-center justify-between px-4 py-3.5 rounded-2xl transition-all duration-300",
                         isExpanded
-                          ? "bg-accent/80 shadow-sm"
-                          : "hover:bg-accent/40"
+                          ? "bg-primary/5 shadow-inner"
+                          : "hover:bg-secondary/80"
                       )}
                     >
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-4">
                         <div className={cn(
-                          "w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300",
-                          isExpanded 
-                            ? "bg-primary/10 text-primary" 
-                            : "bg-muted text-muted-foreground group-hover:bg-primary/5 group-hover:text-primary"
+                          "w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500",
+                          isExpanded
+                            ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                            : "bg-secondary text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary"
                         )}>
-                          <IconComponent className="w-4 h-4" />
+                          <IconComponent className="w-5 h-5" />
                         </div>
-                        <span 
+                        <span
                           className={cn(
-                            "font-medium transition-colors duration-300",
-                            isExpanded ? "text-foreground" : "text-foreground/80 group-hover:text-foreground"
+                            "text-sm font-bold tracking-tight transition-colors duration-300",
+                            isExpanded ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"
                           )}
-                          style={{ fontFamily: 'var(--font-display)' }}
                         >
                           {category.name}
                         </span>
@@ -268,9 +252,11 @@ export default function Navigation({ categories, config = defaultConfig }: Navig
         </div>
 
         {/* 底部装饰 */}
-        <div className="p-4 border-t border-border/30">
-          <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-            <span style={{ fontFamily: 'var(--font-display)' }}>静心 · 专注 · 效率</span>
+        <div className="p-8 mt-auto">
+          <div className="p-4 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 border border-primary/10">
+            <p className="text-[10px] font-black uppercase tracking-widest text-primary text-center">
+              Stay Focused
+            </p>
           </div>
         </div>
       </nav>

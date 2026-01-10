@@ -2,52 +2,57 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 导入主题样式 */
+@import '../themes/theme.css';
+
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
+    /* 禅意浅色主题变量 */
+    --background: 40 20% 98%;
+    --foreground: 220 15% 15%;
+    --card: 40 25% 99%;
+    --card-foreground: 220 15% 15%;
+    --popover: 40 20% 99%;
+    --popover-foreground: 220 15% 15%;
+    --primary: 5 75% 50%;
+    --primary-foreground: 40 20% 98%;
+    --secondary: 165 35% 45%;
+    --secondary-foreground: 40 20% 98%;
+    --muted: 40 15% 94%;
+    --muted-foreground: 220 10% 45%;
+    --accent: 40 30% 92%;
+    --accent-foreground: 220 15% 15%;
+    --destructive: 0 70% 55%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 5.9% 10%;
-    --radius: 0.75rem;
-    --highlight-bg: rgba(0, 0, 0, 0.05);
+    --border: 220 10% 85%;
+    --input: 40 15% 96%;
+    --ring: 5 75% 50%;
+    --radius: 1rem;
+    --highlight-bg: rgba(0, 0, 0, 0.03);
   }
 
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
+    /* 禅意深色主题变量 */
+    --background: 220 20% 8%;
+    --foreground: 40 15% 92%;
+    --card: 220 18% 11%;
+    --card-foreground: 40 15% 92%;
+    --popover: 220 18% 10%;
+    --popover-foreground: 40 15% 92%;
+    --primary: 5 65% 55%;
+    --primary-foreground: 40 15% 95%;
+    --secondary: 165 30% 40%;
+    --secondary-foreground: 40 15% 95%;
+    --muted: 220 15% 14%;
+    --muted-foreground: 40 10% 60%;
+    --accent: 220 15% 16%;
+    --accent-foreground: 40 15% 92%;
+    --destructive: 0 60% 50%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
-    --highlight-bg: rgba(255, 255, 255, 0.05);
+    --border: 220 15% 20%;
+    --input: 220 15% 14%;
+    --ring: 5 65% 55%;
+    --highlight-bg: rgba(255, 255, 255, 0.03);
   }
 }
 
@@ -55,36 +60,107 @@
   * {
     @apply border-border;
   }
+  
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 120px;
+    max-width: 100vw;
+    /* 移除 overflow-x: hidden，因为它可能影响 sticky 定位 */
+  }
+  
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "kern" 1, "liga" 1;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden; /* 在 body 上设置 overflow-x 而不是 html */
   }
 }
 
+/* ========================================
+   动画关键帧
+   ======================================== */
 @keyframes highlight {
   0% {
     background-color: transparent;
   }
   20% {
-    background-color: hsl(var(--primary) / 0.1);
+    background-color: hsl(var(--primary) / 0.08);
   }
   100% {
     background-color: transparent;
   }
 }
 
-.highlight-section {
-  animation: highlight 1.5s ease-in-out;
-  border-radius: 0.5rem;
-  margin: -0.5rem;
-  padding: 0.5rem;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* 优化滚动行为 */
-html {
-  scroll-behavior: smooth;
-  scroll-padding-top: 100px; /* 确保滚动时留出顶部空间 */
-  max-width: 100vw;
-  overflow-x: hidden;
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ========================================
+   组件样式
+   ======================================== */
+.highlight-section {
+  animation: highlight 1.5s ease-in-out;
+  border-radius: var(--radius);
+  margin: -0.5rem;
+  padding: 0.5rem;
 }
 
 /* 添加平滑过渡效果 */
@@ -92,24 +168,177 @@ section {
   transition: background-color 0.3s ease-out;
 }
 
-html, body {
-  max-width: 100vw;
-  overflow-x: hidden;
+/* ========================================
+   粘性分类标题样式
+   ======================================== */
+.sticky-header-active {
+  /* 粘性状态激活时的额外样式 */
 }
 
-@layer utilities {
-  .animate-fade-in {
-    animation: fadeIn 0.5s ease-out;
-  }
-}
-
-@keyframes fadeIn {
+/* 粘性标题进入动画 */
+@keyframes stickySlideIn {
   from {
     opacity: 0;
-    transform: translateY(-20px);
+    transform: translateY(-10px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes stickyGlow {
+  0%, 100% {
+    box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.1);
+  }
+  50% {
+    box-shadow: 0 4px 30px -4px rgba(var(--primary), 0.15);
+  }
+}
+
+.sticky-header-active > div {
+  animation: stickySlideIn 0.3s ease-out;
+}
+
+/* 深色模式下的粘性标题 */
+.dark .sticky-header-active > div {
+  background: hsl(var(--background) / 0.85);
+  border-bottom-color: hsl(var(--border) / 0.3);
+}
+
+/* 粘性标题的微妙光晕效果 */
+.sticky-header-active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -1rem;
+  right: -1rem;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    hsl(var(--background)) 0%,
+    hsl(var(--background) / 0.95) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* 确保粘性标题在滚动时有正确的层级 */
+.sticky {
+  z-index: 20;
+}
+
+/* ========================================
+   工具类
+   ======================================== */
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+  
+  .animate-slide-in-left {
+    animation: slideInLeft 0.5s ease-out forwards;
+  }
+  
+  .animate-slide-in-right {
+    animation: slideInRight 0.5s ease-out forwards;
+  }
+  
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-out forwards;
+  }
+  
+  .animate-pulse-soft {
+    animation: pulse-soft 2s ease-in-out infinite;
+  }
+  
+  /* 延迟动画类 */
+  .delay-100 { animation-delay: 100ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-400 { animation-delay: 400ms; }
+  .delay-500 { animation-delay: 500ms; }
+  
+  /* 渐变文字 */
+  .text-gradient {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  /* 玻璃态效果 */
+  .glass {
+    background: hsl(var(--card) / 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  
+  /* 水墨晕染边框 */
+  .border-ink {
+    border-image: linear-gradient(
+      135deg,
+      hsl(var(--primary) / 0.3),
+      transparent 50%,
+      hsl(var(--secondary) / 0.3)
+    ) 1;
+  }
+  
+  /* 骨架屏加载效果 */
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 25%,
+      hsl(var(--muted-foreground) / 0.1) 50%,
+      hsl(var(--muted)) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+  
+  /* 隐藏滚动条但保持滚动功能 */
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* 文字截断 */
+  .line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+/* ========================================
+   响应式隐藏/显示
+   ======================================== */
+@layer utilities {
+  .hide-mobile {
+    @apply hidden lg:block;
+  }
+  
+  .show-mobile {
+    @apply block lg:hidden;
   }
 }

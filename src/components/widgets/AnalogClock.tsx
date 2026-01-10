@@ -2,13 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 export default function AnalogClock() {
-  // Initialize with null to avoid hydration mismatch
   const [time, setTime] = useState<Date | null>(null);
 
   useEffect(() => {
-    // Set initial time only on client side
     setTime(new Date());
     
     const timer = setInterval(() => {
@@ -18,13 +17,11 @@ export default function AnalogClock() {
     return () => clearInterval(timer);
   }, []);
 
-  // Don't render clock hands until client-side time is available
+  // 骨架屏
   if (!time) {
     return (
-      <div className="analog-clock-widget p-3 rounded-xl border border-border/40 bg-card/80 backdrop-blur-sm shadow-sm mx-auto w-[150px] h-[150px] flex items-center justify-center">
-        <div className="clock-face relative w-[120px] h-[120px] rounded-full border border-border/40 bg-background/80 mx-auto">
-          {/* Static clock face without hands */}
-        </div>
+      <div className="widget-card p-4 rounded-2xl w-[160px] h-[160px] flex items-center justify-center">
+        <div className="w-[130px] h-[130px] rounded-full skeleton"></div>
       </div>
     );
   }
@@ -36,94 +33,111 @@ export default function AnalogClock() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="widget-card analog-clock-widget p-3 bg-card/80 backdrop-blur-sm mx-auto w-[150px] h-[150px] flex items-center justify-center group relative overflow-hidden"
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="widget-card relative p-4 rounded-2xl w-[160px] h-[160px] flex items-center justify-center group overflow-hidden"
     >
-      {/* 背景装饰 - 主题感知 */}
-      <div className="absolute inset-0 opacity-10 bg-gradient-to-br from-primary/20 to-transparent pointer-events-none transition-opacity group-hover:opacity-20"></div>
+      {/* 背景装饰 */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-primary/5 to-transparent rounded-full blur-2xl opacity-50 group-hover:opacity-80 transition-opacity duration-500"></div>
+      </div>
       
-      <div className="clock-face relative w-[120px] h-[120px] rounded-full border border-border/40 bg-background/80 mx-auto z-10">
-        {/* 时钟刻度 - 调整为靠近边缘但不与数字重叠 */}
+      {/* 时钟表盘 */}
+      <div className="relative w-[130px] h-[130px] rounded-full border-2 border-border/50 bg-background/80 shadow-inner group-hover:border-primary/30 transition-colors duration-300">
+        
+        {/* 外圈装饰 */}
+        <div className="absolute inset-1 rounded-full border border-border/20"></div>
+        
+        {/* 时钟刻度 */}
         {[...Array(12)].map((_, i) => (
           <div
             key={i}
-            className="clock-marker absolute bg-foreground/80"
+            className={cn(
+              "absolute bg-foreground/60",
+              i % 3 === 0 ? "w-[2px]" : "w-[1px]"
+            )}
             style={{
-              height: i % 3 === 0 ? '8px' : '4px', // 缩短刻度长度
-              width: i % 3 === 0 ? '2px' : '1px', // 主要刻度更粗
+              height: i % 3 === 0 ? '10px' : '6px',
               left: '50%',
-              top: '5px', // 移到靠近边缘但留出更多空间
-              transformOrigin: '50% 55px', // 调整旋转中心点
+              top: '6px',
+              transformOrigin: '50% 59px',
               transform: `translateX(-50%) rotate(${i * 30}deg)`,
             }}
           />
         ))}
         
-        {/* 时钟数字 - 放置在距离刻度更远的位置 */}
-        {[...Array(12)].map((_, i) => {
-          const number = i === 0 ? 12 : i;
-          const angle = i * 30;
+        {/* 时钟数字 - 仅显示主要数字 */}
+        {[12, 3, 6, 9].map((num) => {
+          const angle = (num === 12 ? 0 : num * 30);
           const radian = (angle - 90) * (Math.PI / 180);
-          const radius = 40; // 更靠近中心，避免与刻度重叠
-          
-          // 计算数字的位置
+          const radius = 42;
           const x = radius * Math.cos(radian);
           const y = radius * Math.sin(radian);
           
           return (
             <div
-              key={`number-${i}`}
-              className="absolute text-xs font-medium text-foreground/90"
+              key={num}
+              className="absolute text-xs font-semibold text-foreground/80"
               style={{
                 left: `calc(50% + ${x}px)`,
                 top: `calc(50% + ${y}px)`,
                 transform: 'translate(-50%, -50%)',
-                zIndex: 10, // 确保数字在最上层
+                fontFamily: 'var(--font-display)',
               }}
             >
-              {number}
+              {num}
             </div>
           );
         })}
         
         {/* 时针 */}
-        <div
-          className="clock-hour-hand absolute w-1.5 h-[35px] bg-foreground rounded-full"
+        <motion.div
+          className="absolute w-[3px] h-[32px] bg-foreground rounded-full origin-bottom"
           style={{
-            left: '50%',
+            left: 'calc(50% - 1.5px)',
             bottom: '50%',
-            transformOrigin: '50% 100%',
-            transform: `translateX(-50%) rotate(${hoursDegrees}deg)`,
           }}
+          animate={{ rotate: hoursDegrees }}
+          transition={{ type: "spring", stiffness: 50, damping: 15 }}
         />
 
         {/* 分针 */}
-        <div
-          className="clock-minute-hand absolute w-1 h-[45px] bg-foreground rounded-full"
+        <motion.div
+          className="absolute w-[2px] h-[42px] bg-foreground/80 rounded-full origin-bottom"
           style={{
-            left: '50%',
+            left: 'calc(50% - 1px)',
             bottom: '50%',
-            transformOrigin: '50% 100%',
-            transform: `translateX(-50%) rotate(${minutesDegrees}deg)`,
           }}
+          animate={{ rotate: minutesDegrees }}
+          transition={{ type: "spring", stiffness: 50, damping: 15 }}
         />
 
-        {/* 秒针 - 缩短长度确保不超出表盘 */}
-        <div
-          className="clock-second-hand absolute w-0.5 h-[52px] bg-primary rounded-full"
+        {/* 秒针 */}
+        <motion.div
+          className="absolute w-[1px] h-[48px] bg-primary rounded-full origin-bottom"
           style={{
-            left: '50%',
+            left: 'calc(50% - 0.5px)',
             bottom: '50%',
-            transformOrigin: '50% 100%',
-            transform: `translateX(-50%) rotate(${secondsDegrees}deg)`,
           }}
-        />
+          animate={{ rotate: secondsDegrees }}
+          transition={{ type: "tween", ease: "linear", duration: 0.1 }}
+        >
+          {/* 秒针尾部 */}
+          <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-primary"></div>
+        </motion.div>
 
         {/* 中心点 */}
-        <div className="clock-center absolute w-3 h-3 bg-primary rounded-full" style={{ left: 'calc(50% - 6px)', top: 'calc(50% - 6px)' }} />
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-primary shadow-md">
+          <div className="absolute inset-0.5 rounded-full bg-primary-foreground/20"></div>
+        </div>
+        
+        {/* 内圈装饰 */}
+        <div className="absolute inset-[35%] rounded-full border border-border/10"></div>
       </div>
+
+      {/* 底部装饰 */}
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/3 h-[2px] bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
     </motion.div>
   );
 }

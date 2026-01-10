@@ -1,10 +1,10 @@
 // src/app/page.tsx
-import LinkContainer from '@/components/layout/LinkContainer';
 import Navigation from '@/components/layout/Navigation';
 import { getLinks, getCategories, getWebsiteConfig } from '@/lib/notion';
 import Footer from '@/components/layout/Footer';
 import { SimpleTime, AnalogClock, HotNews } from '@/components/widgets';
 import WidgetsContainer from '@/components/layout/WidgetsContainer';
+import ContentArea from '@/components/layout/ContentArea';
 import React from 'react';
 
 export const revalidate = 43200; // 12小时重新验证一次
@@ -16,7 +16,6 @@ export default async function HomePage() {
     getLinks(),
     getWebsiteConfig(),
   ]);
-
 
   // 获取启用的分类名称集合
   const enabledCategories = new Set(notionCategories.map(cat => cat.name));
@@ -58,11 +57,9 @@ export default async function HomePage() {
   const widgetMap: Record<string, React.ReactNode> = {
     '简易时钟': <SimpleTime />,
     '圆形时钟': <AnalogClock />,
-    // '天气': <Weather />, // 已禁用
-    // 'IP信息': <IPInfo />, // 已禁用
     '热搜': <HotNews />,
-    // 你可以继续扩展更多组件
   };
+  
   const widgetConfig = config.WIDGET_CONFIG?.split(',').map(s => s.trim()).filter(Boolean) ?? [];
   const widgets = widgetConfig
     .map((name, idx) => {
@@ -72,33 +69,44 @@ export default async function HomePage() {
     })
     .filter(Boolean);
 
+  // 构建 widgets 容器
+  const widgetsElement = widgets.length > 0 ? (
+    <WidgetsContainer>
+      {widgets}
+    </WidgetsContainer>
+  ) : null;
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20">
+    <div className="min-h-screen bg-background relative">
+      {/* 背景装饰 - 水墨晕染效果 */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-primary/3 to-transparent rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-secondary/3 to-transparent rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-muted/20 to-transparent rounded-full blur-3xl opacity-50"></div>
+      </div>
+
       {/* 移动端顶部导航 */}
-      <nav className="fixed top-0 left-0 right-0 z-30 bg-white border-b lg:hidden">
+      <nav className="fixed top-0 left-0 right-0 z-30 lg:hidden">
         <Navigation categories={categoriesWithSubs} config={config} />
       </nav>
+      
       {/* PC端侧边栏导航 */}
-      <aside className="fixed left-0 top-0 w-[300px] h-screen z-20  hidden lg:block pb-24">
+      <aside className="fixed left-0 top-0 w-[280px] h-screen z-20 hidden lg:block">
         <Navigation categories={categoriesWithSubs} config={config} />
       </aside>
-      <main className="ml-0 lg:ml-[300px] pt-[56px] lg:pt-4 min-h-screen flex flex-col">
-        {widgets.length > 0 && (
-          <div className="w-full">
-            <WidgetsContainer>
-              {widgets}
-            </WidgetsContainer>
-          </div>
-        )}
-        <div className="flex-1 w-full min-w-0 overflow-x-hidden px-4 py-4 lg:pt-0 pb-24 pt-16">
-          <LinkContainer 
-            initialLinks={processedLinks} 
-            enabledCategories={enabledCategories}
-            categories={activeCategories}
-          />
-        </div>
+      
+      {/* 主内容区域 */}
+      <main className="relative ml-0 lg:ml-[280px] pt-[112px] lg:pt-0 min-h-screen">
+        <ContentArea
+          initialLinks={processedLinks}
+          enabledCategories={enabledCategories}
+          categories={activeCategories}
+          widgets={widgetsElement}
+        />
       </main>
-      <Footer config={config} className="fixed left-0 right-0 bottom-0 z-30" />
+      
+      {/* 页脚 */}
+      <Footer config={config} className="ml-0 lg:ml-[280px]" />
     </div>
   );
 }

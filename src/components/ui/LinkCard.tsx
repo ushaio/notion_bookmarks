@@ -12,43 +12,44 @@ interface LinkCardProps {
   className?: string;
 }
 
-// 提示框组件
+// 提示框组件 - 禅意风格
 function Tooltip({ content, show, x, y }: { content: string; show: boolean; x: number; y: number }) {
   if (!show) return null;
   
-  // 确保在客户端环境中执行
   if (typeof window === 'undefined' || typeof document === 'undefined') return null;
   
   return createPortal(
-    <div 
-      className="fixed p-2 rounded-lg bg-popover/95 backdrop-blur supports-[backdrop-filter]:bg-popover/85
-                border shadow-lg max-w-xs z-[100] pointer-events-none
-                animate-in fade-in zoom-in-95 duration-200"
+    <motion.div 
+      initial={{ opacity: 0, y: 5, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 5, scale: 0.95 }}
+      className="fixed p-3 rounded-lg bg-card/95 backdrop-blur-md
+                border border-border/50 shadow-lg max-w-xs z-[100] pointer-events-none"
       style={{ 
         left: x,
         top: y - 8,
-        transform: 'translateY(-100%)'
+        transform: 'translateY(-100%)',
+        fontFamily: 'var(--font-body)'
       }}
     >
-      <p className="text-sm text-popover-foreground whitespace-normal">{content}</p>
-    </div>,
+      <p className="text-sm text-foreground leading-relaxed">{content}</p>
+      {/* 小三角 */}
+      <div className="absolute bottom-0 left-4 w-2 h-2 bg-card border-r border-b border-border/50 transform translate-y-1/2 rotate-45"></div>
+    </motion.div>,
     document.body
   );
 }
 
 // 获取图标URL的辅助函数
 function getIconUrl(link: Link): string {
-  // 最优先使用iconfile
   if (link.iconfile) {
     return link.iconfile;
   }
   
-  // 次优先级使用iconlink
   if (link.iconlink) {
     return link.iconlink;
   }
   
-  // 如果都没有，直接使用默认图标
   return '/globe.svg';
 }
 
@@ -60,7 +61,6 @@ export default function LinkCard({ link, className }: LinkCardProps) {
   const [imageError, setImageError] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
 
-  // 预加载图片
   useEffect(() => {
     if (imageSrc && imgRef.current) {
       const img = new window.Image();
@@ -72,7 +72,6 @@ export default function LinkCard({ link, className }: LinkCardProps) {
         }
       };
       img.onerror = () => {
-        // 如果图片加载失败，使用默认图标
         setImageSrc('/globe.svg');
         setImageError(true);
         setImageLoaded(true);
@@ -80,7 +79,6 @@ export default function LinkCard({ link, className }: LinkCardProps) {
     }
   }, [imageSrc]);
 
-  // 当 link 属性变化时重置图标状态
   useEffect(() => {
     setImageError(false);
     setImageLoaded(false);
@@ -110,68 +108,87 @@ export default function LinkCard({ link, className }: LinkCardProps) {
 
   return (
     <>
-    <motion.a
+      <motion.a
         href={link.url}
         target="_blank"
         rel="noopener noreferrer"
-        whileHover={{ scale: 1.02 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        whileHover={{ y: -4 }}
         whileTap={{ scale: 0.98 }}
+        transition={{ duration: 0.3 }}
         className={cn(
-          "group block p-4 rounded-xl border border-border/50 bg-card hover:border-primary/50 transition-all",
-          "hover:shadow-lg hover:shadow-primary/5",
+          "group relative block p-4 rounded-xl overflow-hidden",
+          "bg-card border border-border/40",
+          "hover:border-primary/40 hover:shadow-lg",
+          "transition-all duration-300",
           "w-full max-w-full",
           className
         )}
       >
+        {/* 水墨晕染背景效果 */}
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-primary/5 to-transparent rounded-full blur-2xl"></div>
+          <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-secondary/5 to-transparent rounded-full blur-xl"></div>
+        </div>
+
+        {/* 顶部装饰线 */}
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/0 to-transparent group-hover:via-primary/60 transition-all duration-500"></div>
+
         {/* 内容容器 */}
-        <div className="flex flex-col h-full gap-2">
+        <div className="relative flex flex-col h-full gap-3">
           {/* 图标和名称行 */}
-          <div className="flex items-center gap-3 flex-shrink-0">
-            {/* 图标容器 */}
+          <div className="flex items-start gap-3">
+            {/* 图标容器 - 印章风格 */}
             <motion.div 
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.1 }}
-              className="relative w-10 h-10 rounded-xl overflow-hidden transition-all shrink-0
-                       bg-muted/50 p-1.5 border border-border/50"
+              className="relative shrink-0"
+              whileHover={{ rotate: 3 }}
+              transition={{ type: "spring", stiffness: 400 }}
             >
-              <div className="icon-container relative w-full h-full">
-                <img
-                  ref={imgRef}
-                  alt="Site Icon"
-                  className={cn(
-                    "w-full h-full object-contain transition-opacity duration-200",
-                    imageLoaded ? "opacity-100" : "opacity-0"
+              <div className="w-12 h-12 rounded-lg overflow-hidden bg-muted/50 border border-border/50 p-1.5 group-hover:border-primary/30 transition-colors duration-300">
+                <div className="relative w-full h-full">
+                  <img
+                    ref={imgRef}
+                    alt="Site Icon"
+                    className={cn(
+                      "w-full h-full object-contain transition-all duration-300",
+                      imageLoaded ? "opacity-100" : "opacity-0",
+                      "group-hover:scale-110"
+                    )}
+                    onError={handleImageError}
+                    loading="eager"
+                    decoding="async"
+                  />
+                  {!imageLoaded && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-5 h-5 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                    </div>
                   )}
-                  onError={handleImageError}
-                  loading="eager"
-                  decoding="async"
-                />
-                {!imageLoaded && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-                  </div>
-                )}
+                </div>
               </div>
+              {/* 印章角标 */}
+              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-primary/10 rounded-sm rotate-12 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </motion.div>
             
-            {/* 网站名称和图标 */}
-            <div className="flex-1 min-w-0 relative">
+            {/* 网站名称 */}
+            <div className="flex-1 min-w-0 pt-1">
               <div 
                 className="relative"
                 onMouseEnter={(e) => handleMouseEnter(e, setTitleTooltip)}
                 onMouseLeave={() => handleMouseLeave(setTitleTooltip)}
               >
-                <h3 className="text-lg text-foreground
-                               group-hover:text-primary
-                               transition-colors line-clamp-1 pr-6">
+                <h3 
+                  className="text-base font-semibold text-foreground group-hover:text-primary transition-colors duration-300 line-clamp-1 pr-6"
+                  style={{ fontFamily: 'var(--font-display)' }}
+                >
                   {link.name}
                 </h3>
               </div>
-              {/* 固定位置的外链图标 */}
-              <div className="absolute right-0 top-1/2 -translate-y-1/2">
+              
+              {/* 外链图标 */}
+              <div className="absolute right-4 top-4">
                 <IconExternalLink 
-                  className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" 
+                  className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" 
                 />
               </div>
             </div>
@@ -180,39 +197,42 @@ export default function LinkCard({ link, className }: LinkCardProps) {
           {/* 描述行 */}
           {link.desc && (
             <div 
-              className="relative flex-1 min-h-0"
+              className="flex-1"
               onMouseEnter={(e) => handleMouseEnter(e, setDescTooltip)}
               onMouseLeave={() => handleMouseLeave(setDescTooltip)}
             >
-              <p className="text-sm text-foreground/80
-                         group-hover:text-foreground
-                         line-clamp-2 transition-colors">
+              <p 
+                className="text-sm text-muted-foreground group-hover:text-foreground/80 line-clamp-2 transition-colors duration-300 leading-relaxed"
+                style={{ fontFamily: 'var(--font-body)' }}
+              >
                 {link.desc}
               </p>
             </div>
           )}
 
-          {/* 标签行 - 放在底部 */}
+          {/* 标签行 - 水墨标签风格 */}
           {link.tags && link.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 flex-shrink-0">
-              {link.tags.slice(0, 3).map((tag) => (
-                <span
+            <div className="flex flex-wrap gap-1.5 pt-1">
+              {link.tags.slice(0, 3).map((tag, index) => (
+                <motion.span
                   key={tag}
-                  className="inline-flex items-center px-2 py-0.5 text-xs rounded-md
-                           bg-muted/40 text-muted-foreground
-                           group-hover:bg-primary/10 group-hover:text-primary/90
-                           transition-colors"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: index * 0.05 }}
+                  className={cn(
+                    "inline-flex items-center px-2 py-0.5 text-xs rounded-md",
+                    "bg-muted/60 text-muted-foreground",
+                    "group-hover:bg-primary/10 group-hover:text-primary/90",
+                    "transition-all duration-300 border border-transparent",
+                    "group-hover:border-primary/20"
+                  )}
                   title={tag}
                 >
                   <span className="truncate max-w-[80px]">{tag}</span>
-                </span>
+                </motion.span>
               ))}
               {link.tags.length > 3 && (
-                <span className="inline-flex items-center px-2 py-0.5 text-xs rounded-md
-                              bg-muted/40 text-muted-foreground
-                              group-hover:bg-primary/10 group-hover:text-primary/90
-                              transition-colors shrink-0"
-                >
+                <span className="inline-flex items-center px-2 py-0.5 text-xs rounded-md bg-muted/60 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary/90 transition-all duration-300">
                   +{link.tags.length - 3}
                 </span>
               )}
@@ -220,10 +240,8 @@ export default function LinkCard({ link, className }: LinkCardProps) {
           )}
         </div>
 
-        {/* 渐变悬浮效果 */}
-        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-transparent via-transparent to-transparent
-                      group-hover:from-primary/5 group-hover:via-primary/2 group-hover:to-transparent
-                      transition-colors duration-500" />
+        {/* 底部装饰 - 毛笔笔触 */}
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent group-hover:w-3/4 transition-all duration-500"></div>
       </motion.a>
 
       {/* 提示框 */}

@@ -1,78 +1,134 @@
+
+/* 东方禅意主题 - Zen Ink Theme */
 /* 导入字体 */
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=ZCOOL+XiaoWei&display=swap');
 
 /* 基础变量 */
 :root {
-  --font-sans: 'Noto Sans SC', system-ui, -apple-system, sans-serif;
-  --radius-sm: 0.3rem;
+  /* 字体系统 */
+  --font-display: 'Noto Serif SC', 'ZCOOL XiaoWei', 'STSong', 'SimSun', serif;
+  --font-body: 'Noto Serif SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  
+  /* 圆角系统 */
+  --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
-  --radius-lg: 0.8rem;
-  --transition-all: all 0.2s ease-out;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  
+  /* 过渡系统 */
+  --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* 间距系统 */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
 }
 
-/* 简约浅色主题 */
+/* ========================================
+   禅意浅色主题 - Zen Light (宣纸白)
+   ======================================== */
 [data-theme="simple-light"] {
-  --background: hsl(0 0% 100%);
-  --foreground: hsl(222.2 47.4% 11.2%);
+  /* 核心色彩 - 宣纸与墨色 */
+  --background: hsl(40 20% 98%);           /* 宣纸白 */
+  --foreground: hsl(220 15% 15%);          /* 墨色 */
   
-  --muted: hsl(210 40% 96.1%);
-  --muted-foreground: hsl(215.4 16.3% 46.9%);
+  /* 层次色彩 */
+  --muted: hsl(40 15% 94%);                /* 淡墨背景 */
+  --muted-foreground: hsl(220 10% 45%);    /* 淡墨文字 */
   
-  --popover: hsl(0 0% 100%);
-  --popover-foreground: hsl(222.2 47.4% 11.2%);
+  --popover: hsl(40 20% 99%);
+  --popover-foreground: hsl(220 15% 15%);
   
-  --card: hsl(0 0% 100%);
-  --card-foreground: hsl(222.2 47.4% 11.2%);
+  --card: hsl(40 25% 99%);                 /* 卡片背景 */
+  --card-foreground: hsl(220 15% 15%);
   
-  --border: hsl(214.3 31.8% 91.4%);
-  --input: hsl(214.3 31.8% 91.4%);
+  /* 边框与输入 */
+  --border: hsl(220 10% 85%);
+  --input: hsl(40 15% 96%);
   
-  --primary: hsl(222.2 47.4% 11.2%);
-  --primary-foreground: hsl(210 40% 98%);
+  /* 主色调 - 朱砂红 */
+  --primary: hsl(5 75% 50%);               /* 朱砂红 */
+  --primary-foreground: hsl(40 20% 98%);
   
-  --secondary: hsl(210 40% 96.1%);
-  --secondary-foreground: hsl(222.2 47.4% 11.2%);
+  /* 次要色 - 青瓷绿 */
+  --secondary: hsl(165 35% 45%);           /* 青瓷绿 */
+  --secondary-foreground: hsl(40 20% 98%);
   
-  --accent: hsl(210 40% 96.1%);
-  --accent-foreground: hsl(222.2 47.4% 11.2%);
+  /* 强调色 */
+  --accent: hsl(40 30% 92%);
+  --accent-foreground: hsl(220 15% 15%);
   
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  /* 警告色 */
+  --destructive: hsl(0 70% 55%);
+  
+  /* 阴影系统 - 水墨晕染感 */
+  --shadow-sm: 0 1px 3px hsla(220, 15%, 15%, 0.04), 0 1px 2px hsla(220, 15%, 15%, 0.02);
+  --shadow-md: 0 4px 12px hsla(220, 15%, 15%, 0.06), 0 2px 4px hsla(220, 15%, 15%, 0.03);
+  --shadow-lg: 0 12px 32px hsla(220, 15%, 15%, 0.08), 0 4px 8px hsla(220, 15%, 15%, 0.04);
+  --shadow-ink: 0 8px 24px hsla(220, 15%, 15%, 0.12);
+  
+  /* 特殊效果 */
+  --ink-wash: linear-gradient(135deg, hsla(220, 15%, 15%, 0.02) 0%, transparent 50%);
+  --paper-texture: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
 }
 
-/* 简约深色主题 */
+/* ========================================
+   禅意深色主题 - Zen Dark (墨夜)
+   ======================================== */
 [data-theme="simple-dark"] {
-  --background: hsl(222.2 84% 4.9%);
-  --foreground: hsl(210 40% 98%);
+  /* 核心色彩 - 深墨与月白 */
+  --background: hsl(220 20% 8%);           /* 深墨夜 */
+  --foreground: hsl(40 15% 92%);           /* 月白 */
   
-  --muted: hsl(217.2 32.6% 17.5%);
-  --muted-foreground: hsl(215 20.2% 65.1%);
+  /* 层次色彩 */
+  --muted: hsl(220 15% 14%);               /* 淡墨层 */
+  --muted-foreground: hsl(40 10% 60%);     /* 淡墨文字 */
   
-  --popover: hsl(222.2 84% 4.9%);
-  --popover-foreground: hsl(210 40% 98%);
+  --popover: hsl(220 18% 10%);
+  --popover-foreground: hsl(40 15% 92%);
   
-  --card: hsl(222.2 84% 4.9%);
-  --card-foreground: hsl(210 40% 98%);
+  --card: hsl(220 18% 11%);                /* 卡片背景 */
+  --card-foreground: hsl(40 15% 92%);
   
-  --border: hsl(217.2 32.6% 17.5%);
-  --input: hsl(217.2 32.6% 17.5%);
+  /* 边框与输入 */
+  --border: hsl(220 15% 20%);
+  --input: hsl(220 15% 14%);
   
-  --primary: hsl(210 40% 98%);
-  --primary-foreground: hsl(222.2 47.4% 11.2%);
+  /* 主色调 - 朱砂红(暗调) */
+  --primary: hsl(5 65% 55%);               /* 朱砂红 */
+  --primary-foreground: hsl(40 15% 95%);
   
-  --secondary: hsl(217.2 32.6% 17.5%);
-  --secondary-foreground: hsl(210 40% 98%);
+  /* 次要色 - 青瓷绿(暗调) */
+  --secondary: hsl(165 30% 40%);           /* 青瓷绿 */
+  --secondary-foreground: hsl(40 15% 95%);
   
-  --accent: hsl(217.2 32.6% 17.5%);
-  --accent-foreground: hsl(210 40% 98%);
+  /* 强调色 */
+  --accent: hsl(220 15% 16%);
+  --accent-foreground: hsl(40 15% 92%);
   
-  --shadow-sm: 0 1px 2px 0 rgb(255 255 255 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(255 255 255 / 0.1), 0 2px 4px -2px rgb(255 255 255 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(255 255 255 / 0.1), 0 4px 6px -4px rgb(255 255 255 / 0.1);
+  /* 警告色 */
+  --destructive: hsl(0 60% 50%);
+  
+  /* 阴影系统 */
+  --shadow-sm: 0 1px 3px hsla(0, 0%, 0%, 0.2), 0 1px 2px hsla(0, 0%, 0%, 0.1);
+  --shadow-md: 0 4px 12px hsla(0, 0%, 0%, 0.25), 0 2px 4px hsla(0, 0%, 0%, 0.15);
+  --shadow-lg: 0 12px 32px hsla(0, 0%, 0%, 0.3), 0 4px 8px hsla(0, 0%, 0%, 0.2);
+  --shadow-ink: 0 8px 24px hsla(0, 0%, 0%, 0.4);
+  
+  /* 特殊效果 */
+  --ink-wash: linear-gradient(135deg, hsla(40, 15%, 92%, 0.02) 0%, transparent 50%);
+  --paper-texture: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)' opacity='0.02'/%3E%3C/svg%3E");
 }
 
-/* 赛博朋克主题 */
+/* ========================================
+   赛博朋克主题 - Cyberpunk (保留原有)
+   ======================================== */
 [data-theme="cyberpunk-dark"] {
   --background: hsl(232, 40%, 4%);
   --foreground: hsl(0, 0%, 100%);
@@ -98,15 +154,469 @@
   --accent: hsla(286, 100%, 65%, 0.2);
   --accent-foreground: hsl(0, 0%, 100%);
   
+  --destructive: hsl(0 84% 60%);
+  
   --shadow-sm: 0 0 10px hsla(286, 100%, 65%, 0.2);
   --shadow-md: 0 0 20px hsla(286, 100%, 65%, 0.4), 0 0 10px hsla(180, 100%, 55%, 0.3);
   --shadow-lg: 0 0 40px hsla(286, 100%, 65%, 0.7), 0 0 20px hsla(180, 100%, 55%, 0.5);
+  
   font-family: 'Rajdhani', 'Noto Sans SC', sans-serif;
   font-size: 1.08rem;
   font-weight: 500;
   letter-spacing: 0.02em;
 }
 
+/* ========================================
+   全局基础样式
+   ======================================== */
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body);
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 宣纸纹理背景 */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: var(--paper-texture);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* 标题字体 */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  line-height: 1.4;
+}
+
+/* ========================================
+   Widget Card - 禅意卡片
+   ======================================== */
+.widget-card {
+  position: relative;
+  background-color: var(--card);
+  color: var(--card-foreground);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+  transition: var(--transition-normal);
+  overflow: hidden;
+}
+
+/* 水墨晕染效果 */
+.widget-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    var(--primary) 20%, 
+    var(--primary) 80%, 
+    transparent 100%
+  );
+  opacity: 0;
+  transition: var(--transition-normal);
+}
+
+.widget-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+  border-color: var(--primary);
+}
+
+.widget-card:hover::before {
+  opacity: 1;
+}
+
+/* ========================================
+   搜索框组件 - 禅意搜索
+   ======================================== */
+.search-box-widget {
+  position: relative;
+  background: var(--card);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+  transition: var(--transition-normal);
+  overflow: hidden;
+}
+
+/* 毛笔笔触装饰 */
+.search-box-widget::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    var(--primary) 30%, 
+    var(--primary) 70%, 
+    transparent 100%
+  );
+  opacity: 0.3;
+  transition: var(--transition-normal);
+}
+
+.search-box-widget:hover::after,
+.search-box-widget:focus-within::after {
+  opacity: 0.8;
+  width: 80%;
+}
+
+.search-box-widget:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: hsla(5, 75%, 50%, 0.3);
+}
+
+.search-box-widget input {
+  background-color: transparent;
+  color: var(--foreground);
+  font-family: var(--font-body);
+}
+
+.search-box-widget input::placeholder {
+  color: var(--muted-foreground);
+  font-style: italic;
+}
+
+/* ========================================
+   平台标签 - 印章风格
+   ======================================== */
+.platform-tab {
+  position: relative;
+  background: transparent;
+  color: var(--muted-foreground);
+  border-radius: var(--radius-md);
+  transition: var(--transition-fast);
+  font-family: var(--font-display);
+  font-weight: 500;
+}
+
+.platform-tab:hover {
+  background: var(--muted);
+  color: var(--foreground);
+}
+
+.platform-tab-active {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  box-shadow: 0 2px 8px hsla(5, 75%, 50%, 0.3);
+}
+
+/* 印章效果 */
+.platform-tab-active::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border: 2px solid var(--primary);
+  border-radius: var(--radius-md);
+  opacity: 0.3;
+}
+
+/* ========================================
+   热搜列表项 - 水墨风格
+   ======================================== */
+.hot-news-item {
+  position: relative;
+  border-left: 2px solid transparent;
+  transition: var(--transition-fast);
+  padding-left: var(--space-sm);
+}
+
+.hot-news-item:hover {
+  border-left-color: var(--primary);
+  background: linear-gradient(90deg, var(--accent) 0%, transparent 100%);
+}
+
+.hot-news-index {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--muted-foreground);
+}
+
+.hot-news-title {
+  color: var(--card-foreground);
+  transition: var(--transition-fast);
+  font-family: var(--font-body);
+}
+
+.hot-news-item:hover .hot-news-title {
+  color: var(--primary);
+}
+
+.hot-news-views {
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+}
+
+/* ========================================
+   导航标题 - 书法风格
+   ======================================== */
+.neon-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: 0.1em;
+  color: var(--foreground);
+  position: relative;
+}
+
+/* 朱砂印章装饰 */
+.neon-title::after {
+  content: '◆';
+  position: absolute;
+  right: -1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.5rem;
+  color: var(--primary);
+  opacity: 0.6;
+}
+
+/* ========================================
+   分类标题 - 水墨标题
+   ======================================== */
+.category-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.5rem;
+  letter-spacing: 0.08em;
+  position: relative;
+  display: inline-block;
+  padding-bottom: var(--space-sm);
+}
+
+/* 毛笔下划线 */
+.category-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, 
+    var(--primary) 0%, 
+    var(--primary) 60%, 
+    transparent 100%
+  );
+  border-radius: 2px;
+}
+
+/* ========================================
+   链接卡片 - 禅意卡片
+   ======================================== */
+.link-card {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  transition: var(--transition-normal);
+  overflow: hidden;
+}
+
+/* 水墨角落装饰 */
+.link-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, 
+    transparent 50%, 
+    var(--accent) 50%
+  );
+  opacity: 0;
+  transition: var(--transition-normal);
+}
+
+.link-card:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-3px);
+}
+
+.link-card:hover::before {
+  opacity: 1;
+}
+
+/* ========================================
+   滚动条 - 竹简风格
+   ======================================== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--muted);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, 
+    var(--muted-foreground) 0%, 
+    var(--border) 100%
+  );
+  border-radius: 4px;
+  border: 2px solid var(--muted);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* ========================================
+   按钮样式 - 印章按钮
+   ======================================== */
+.zen-button {
+  position: relative;
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-md);
+  transition: var(--transition-fast);
+  overflow: hidden;
+}
+
+.zen-button-primary {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border: none;
+}
+
+.zen-button-primary:hover {
+  box-shadow: 0 4px 12px hsla(5, 75%, 50%, 0.4);
+  transform: translateY(-1px);
+}
+
+.zen-button-secondary {
+  background: transparent;
+  color: var(--foreground);
+  border: 1px solid var(--border);
+}
+
+.zen-button-secondary:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* ========================================
+   输入框 - 宣纸风格
+   ======================================== */
+.zen-input {
+  background: var(--input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+  font-family: var(--font-body);
+  transition: var(--transition-fast);
+}
+
+.zen-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px hsla(5, 75%, 50%, 0.1);
+}
+
+/* ========================================
+   动画效果
+   ======================================== */
+@keyframes ink-spread {
+  0% {
+    transform: scale(0);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes brush-stroke {
+  0% {
+    width: 0;
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    width: 100%;
+    opacity: 0.8;
+  }
+}
+
+@keyframes float-gentle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 应用动画 */
+.animate-ink-spread {
+  animation: ink-spread 0.6s ease-out forwards;
+}
+
+.animate-brush-stroke {
+  animation: brush-stroke 0.8s ease-out forwards;
+}
+
+.animate-float {
+  animation: float-gentle 3s ease-in-out infinite;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out forwards;
+}
+
+/* ========================================
+   响应式调整
+   ======================================== */
+@media (max-width: 768px) {
+  :root {
+    --space-lg: 1rem;
+    --space-xl: 1.5rem;
+    --space-2xl: 2rem;
+  }
+  
+  h1 { font-size: 1.75rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.25rem; }
+}
+
+/* ========================================
+   赛博朋克主题特殊效果 (保留原有)
+   ======================================== */
 [data-theme="cyberpunk-dark"] h1,
 [data-theme="cyberpunk-dark"] h2,
 [data-theme="cyberpunk-dark"] h3,
@@ -123,101 +633,14 @@
 [data-theme="cyberpunk-dark"] .widget-card,
 [data-theme="cyberpunk-dark"] .group,
 [data-theme="cyberpunk-dark"] .platform-tab,
-[data-theme="cyberpunk-dark"] .hot-news-item {
+[data-theme="cyberpunk-dark"] .hot-news-item,
+[data-theme="cyberpunk-dark"] .search-box-widget {
   font-family: 'Rajdhani', 'Noto Sans SC', sans-serif;
   font-size: 1.08rem;
   font-weight: 500;
   letter-spacing: 0.02em;
 }
 
-[data-theme="cyberpunk-dark"] .widget-card h1,
-[data-theme="cyberpunk-dark"] .widget-card h2,
-[data-theme="cyberpunk-dark"] .widget-card h3,
-[data-theme="cyberpunk-dark"] .group h1,
-[data-theme="cyberpunk-dark"] .group h2,
-[data-theme="cyberpunk-dark"] .group h3,
-[data-theme="cyberpunk-dark"] .platform-tab h1,
-[data-theme="cyberpunk-dark"] .platform-tab h2,
-[data-theme="cyberpunk-dark"] .platform-tab h3,
-[data-theme="cyberpunk-dark"] .hot-news-item h1,
-[data-theme="cyberpunk-dark"] .hot-news-item h2,
-[data-theme="cyberpunk-dark"] .hot-news-item h3 {
-  font-family: 'Orbitron', 'Rajdhani', 'Noto Sans SC', sans-serif;
-  text-transform: uppercase;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-}
-
-/* 通用组件样式 */
-body {
-  background-color: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans);
-}
-
-.widget-card {
-  background-color: var(--card);
-  color: var(--card-foreground);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
-  border: var(--border-width, 1px) var(--border-style, solid) var(--border, transparent);
-  transition: var(--transition-all);
-}
-
-.widget-card:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
-}
-
-.platform-tab {
-  background: transparent;
-  color: var(--muted-foreground);
-  border-radius: var(--radius-lg);
-  transition: var(--transition-all);
-}
-
-.platform-tab:hover {
-  background: var(--muted);
-  color: var(--foreground);
-}
-
-.platform-tab-active {
-  background: var(--primary);
-  color: var(--primary-foreground);
-}
-
-.hot-news-item {
-  border-left: 2px solid transparent;
-  transition: var(--transition-all);
-}
-
-.hot-news-item:hover {
-  border-left-color: var(--primary);
-  background: var(--accent);
-}
-
-.hot-news-index {
-  color: var(--muted-foreground);
-}
-
-.hot-news-title {
-  color: var(--card-foreground);
-  transition: var(--transition-all);
-}
-
-.hot-news-item:hover .hot-news-title {
-  color: var(--primary);
-}
-
-.hot-news-views {
-  color: var(--muted-foreground);
-}
-
-.hot-news-icon {
-  color: var(--muted-foreground);
-}
-
-/* 赛博朋克特殊效果 */
 [data-theme="cyberpunk-dark"] .widget-card {
   position: relative;
   border: none;
@@ -225,7 +648,6 @@ body {
   background: linear-gradient(135deg, var(--muted) 0%, var(--background) 100%);
   box-shadow: 0 0 24px 2px hsla(286, 100%, 65%, 0.25), 0 0 8px 2px hsla(180, 100%, 55%, 0.15);
   color: #fff;
-  font-family: 'Rajdhani', 'Noto Sans SC', sans-serif;
   overflow: hidden;
 }
 
@@ -249,22 +671,17 @@ body {
   z-index: 2;
 }
 
-[data-theme="cyberpunk-dark"] .platform-tab-active {
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  text-shadow: 0 0 10px currentColor;
-}
-
-[data-theme="cyberpunk-dark"] .group {
+[data-theme="cyberpunk-dark"] .search-box-widget {
   position: relative;
   border: none;
   border-radius: 0;
   background: linear-gradient(135deg, var(--muted) 0%, var(--background) 100%);
-  box-shadow: 0 0 24px 2px hsla(286, 100%, 65%, 0.18), 0 0 8px 2px hsla(180, 100%, 55%, 0.10);
+  box-shadow: 0 0 24px 2px hsla(286, 100%, 65%, 0.25), 0 0 8px 2px hsla(180, 100%, 55%, 0.15);
   color: #fff;
   overflow: hidden;
 }
 
-[data-theme="cyberpunk-dark"] .group::before {
+[data-theme="cyberpunk-dark"] .search-box-widget::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -279,65 +696,7 @@ body {
   -webkit-mask-composite: xor;
 }
 
-[data-theme="cyberpunk-dark"] .group > * {
-  position: relative;
-  z-index: 2;
-}
-
-[data-theme="cyberpunk-dark"] .platform-tab {
-  position: relative;
-  border: none;
-  border-radius: 0;
-  background: linear-gradient(135deg, var(--muted) 0%, var(--background) 100%);
-  color: #fff;
-  overflow: hidden;
-}
-
-[data-theme="cyberpunk-dark"] .platform-tab::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  padding: 2px;
-  border-radius: 0;
-  background: linear-gradient(135deg, hsl(286, 100%, 65%), hsl(180, 100%, 55%));
-  z-index: 1;
-  pointer-events: none;
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: exclude;
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-}
-
-[data-theme="cyberpunk-dark"] .platform-tab > * {
-  position: relative;
-  z-index: 2;
-}
-
-[data-theme="cyberpunk-dark"] .hot-news-item {
-  position: relative;
-  border: none;
-  border-radius: 0;
-  background: linear-gradient(135deg, var(--muted) 0%, var(--background) 100%);
-  color: #fff;
-  overflow: hidden;
-}
-
-[data-theme="cyberpunk-dark"] .hot-news-item::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  padding: 2px;
-  border-radius: 0;
-  background: linear-gradient(135deg, hsl(286, 100%, 65%), hsl(180, 100%, 55%));
-  z-index: 1;
-  pointer-events: none;
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: exclude;
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-}
-
-[data-theme="cyberpunk-dark"] .hot-news-item::after {
+[data-theme="cyberpunk-dark"] .search-box-widget::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -347,30 +706,6 @@ body {
               radial-gradient(ellipse at 30% 80%, hsla(180,100%,55%,0.12) 0%, transparent 80%);
   filter: blur(12px);
   opacity: 0.7;
-}
-
-[data-theme="cyberpunk-dark"] .hot-news-item > * {
-  position: relative;
-  z-index: 2;
-}
-
-[data-theme="cyberpunk-dark"] .widget-card::after,
-[data-theme="cyberpunk-dark"] .group::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: radial-gradient(ellipse at 60% 40%, hsla(286,100%,65%,0.18) 0%, transparent 70%),
-              radial-gradient(ellipse at 30% 80%, hsla(180,100%,55%,0.12) 0%, transparent 80%);
-  filter: blur(12px);
-  opacity: 0.7;
-}
-
-[data-theme="cyberpunk-dark"] .widget-card > *,
-[data-theme="cyberpunk-dark"] .group > * {
-  position: relative;
-  z-index: 2;
 }
 
 [data-theme="cyberpunk-dark"] .neon-title {
@@ -387,23 +722,10 @@ body {
   letter-spacing: 0.12em;
   font-weight: 700;
   text-transform: uppercase;
-  position: relative;
-  z-index: 2;
 }
 
 [data-theme="cyberpunk-dark"] .neon-title::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 180%;
-  height: 180%;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(circle, hsla(286, 100%, 65%, 0.25) 0%, transparent 70%);
-  filter: blur(12px);
-  z-index: -1;
-  pointer-events: none;
-  opacity: 0.8;
+  display: none;
 }
 
 @keyframes neon-flicker {
@@ -417,4 +739,36 @@ body {
   70% { opacity: 0.85; filter: brightness(1.4); }
   80% { opacity: 1; filter: brightness(1.1); }
   90% { opacity: 0.95; filter: brightness(1.3); }
-} 
+}
+
+/* ========================================
+   工具类
+   ======================================== */
+.text-balance {
+  text-wrap: balance;
+}
+
+.backdrop-blur-zen {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* 选中文本样式 */
+::selection {
+  background: hsla(5, 75%, 50%, 0.2);
+  color: var(--foreground);
+}
+
+/* 焦点样式 */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* 禁用状态 */
+.disabled,
+[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}

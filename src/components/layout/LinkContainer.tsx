@@ -2,21 +2,197 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import LinkCard from "@/components/ui/LinkCard";
 import * as Icons from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { Link, Category } from '@/types/notion';
 import { useAuth } from '@/contexts/AuthContext';
+import { cn } from '@/lib/utils';
+
+// 视图模式类型
+export type ViewMode = 'normal' | 'compact' | 'list';
 
 interface LinkContainerProps {
   initialLinks: Link[];
   enabledCategories: Set<string>;
   categories: Category[];
+  searchKeyword?: string;
+  viewMode?: ViewMode;
+}
+
+// 粘性标题组件 - 纯 CSS sticky 实现
+interface StickyCategoryHeaderProps {
+  category: Category;
+  linkCount: number;
+}
+
+function StickyCategoryHeader({ category, linkCount }: StickyCategoryHeaderProps) {
+  const IconComponent = category.iconName && Icons[category.iconName as keyof typeof Icons]
+    ? Icons[category.iconName as keyof typeof Icons] as React.ComponentType<{ className?: string }>
+    : Icons.Bookmark;
+
+  return (
+    <div
+      className={cn(
+        // 粘性定位核心
+        "sticky z-20",
+        // 移动端顶部偏移（考虑导航栏高度），PC端从顶部开始
+        "top-[112px] lg:top-0",
+        // 背景和视觉效果
+        "bg-background/95 backdrop-blur-md",
+        // 边距调整，让背景延伸到边缘
+        "-mx-4 px-4 lg:-mx-6 lg:px-6",
+        // 内边距
+        "py-4",
+        // 底部边框
+        "border-b border-transparent",
+        // 过渡效果
+        "transition-all duration-200"
+      )}
+      style={{
+        // 使用 CSS 变量控制粘性状态的样式变化
+        // 当元素处于粘性状态时，浏览器会自动应用这些样式
+      }}
+    >
+      <div className="flex items-center gap-4">
+        {/* 图标 */}
+        <motion.div
+          whileHover={{ scale: 1.05, rotate: 3 }}
+          className={cn(
+            "w-10 h-10 rounded-xl flex items-center justify-center",
+            "bg-primary/10 text-primary border border-primary/20",
+            "shadow-sm"
+          )}
+        >
+          <IconComponent className="w-5 h-5" />
+        </motion.div>
+        
+        {/* 标题文字 */}
+        <div className="flex-1 min-w-0">
+          <h2
+            className="text-2xl font-bold tracking-wide text-foreground truncate"
+            style={{ fontFamily: 'var(--font-display)' }}
+          >
+            {category.name}
+          </h2>
+          <div className="mt-1 h-[2px] w-16 bg-gradient-to-r from-primary to-transparent rounded-full"></div>
+        </div>
+        
+        {/* 链接数量 */}
+        <div className="text-sm text-muted-foreground px-3 py-1 rounded-full bg-muted/50 whitespace-nowrap">
+          {linkCount} 个书签
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 获取图标URL的辅助函数
+function getIconUrl(link: Link): string {
+  if (link.iconfile) {
+    return link.iconfile;
+  }
+  if (link.iconlink) {
+    return link.iconlink;
+  }
+  return '/globe.svg';
+}
+
+// 紧凑型链接卡片组件（用于高效模式）
+function CompactLinkCard({ link, className }: { link: Link; className?: string }) {
+  const iconUrl = getIconUrl(link);
+  
+  return (
+    <motion.a
+      href={link.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      whileHover={{ scale: 1.02, y: -2 }}
+      whileTap={{ scale: 0.98 }}
+      className={cn(
+        "flex items-center gap-2.5 p-2 rounded-lg",
+        "bg-card/60 hover:bg-card border border-border/30 hover:border-primary/30",
+        "transition-all duration-200 group shadow-sm hover:shadow-md",
+        className
+      )}
+    >
+      {/* 图标 */}
+      <div className="w-7 h-7 rounded-md bg-muted/50 flex items-center justify-center flex-shrink-0 overflow-hidden border border-border/30 group-hover:border-primary/20 transition-colors">
+        <img
+          src={iconUrl}
+          alt=""
+          className="w-4.5 h-4.5 object-contain group-hover:scale-110 transition-transform duration-200"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = '/globe.svg';
+          }}
+        />
+      </div>
+      
+      {/* 名称 */}
+      <span className="flex-1 text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors">
+        {link.name}
+      </span>
+      
+      {/* 外链图标 */}
+      <ExternalLink className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+    </motion.a>
+  );
+}
+
+// 列表型链接项组件（用于列表模式）
+function ListLinkItem({ link, className }: { link: Link; className?: string }) {
+  const iconUrl = getIconUrl(link);
+  
+  return (
+    <motion.a
+      href={link.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      whileHover={{ x: 4, backgroundColor: 'hsl(var(--muted) / 0.5)' }}
+      className={cn(
+        "flex items-center gap-2.5 py-1.5 px-2 rounded-md",
+        "transition-all duration-150 group",
+        "border-b border-border/10 last:border-b-0",
+        className
+      )}
+    >
+      {/* 图标 */}
+      <div className="w-5 h-5 rounded flex items-center justify-center flex-shrink-0 overflow-hidden">
+        <img
+          src={iconUrl}
+          alt=""
+          className="w-4 h-4 object-contain"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = '/globe.svg';
+          }}
+        />
+      </div>
+      
+      {/* 名称 */}
+      <span className="flex-1 text-sm text-foreground truncate group-hover:text-primary transition-colors">
+        {link.name}
+      </span>
+      
+      {/* 描述（可选） */}
+      {link.desc && (
+        <span className="hidden lg:block text-xs text-muted-foreground truncate max-w-[250px]">
+          {link.desc}
+        </span>
+      )}
+      
+      {/* 外链图标 */}
+      <ExternalLink className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+    </motion.a>
+  );
 }
 
 export default function LinkContainer({
   initialLinks,
   enabledCategories,
   categories,
+  searchKeyword = '',
+  viewMode = 'normal',
 }: LinkContainerProps) {
   const [mounted, setMounted] = useState(false);
   const [currentTime, setCurrentTime] = useState<Date | null>(null);
@@ -28,15 +204,30 @@ export default function LinkContainer({
   }, []);
 
   // 根据管理员状态过滤链接
-  const filteredLinks = useMemo(() => {
+  const filteredByAdmin = useMemo(() => {
     if (isAdmin) {
-      // 管理员可以看到所有链接
       return initialLinks;
     }
-    // 非管理员只能看到非管理员专属的链接
     return initialLinks.filter(link => !link.isAdminOnly);
   }, [initialLinks, isAdmin]);
-  // 按一级和二级分类组织链接，只包含启用的分类
+
+  // 根据搜索关键词过滤链接
+  const filteredLinks = useMemo(() => {
+    if (!searchKeyword.trim()) {
+      return filteredByAdmin;
+    }
+    
+    const keyword = searchKeyword.toLowerCase().trim();
+    return filteredByAdmin.filter(link => {
+      const nameMatch = link.name?.toLowerCase().includes(keyword);
+      const descMatch = link.desc?.toLowerCase().includes(keyword);
+      const urlMatch = link.url?.toLowerCase().includes(keyword);
+      const tagsMatch = link.tags?.some(tag => tag.toLowerCase().includes(keyword));
+      return nameMatch || descMatch || urlMatch || tagsMatch;
+    });
+  }, [filteredByAdmin, searchKeyword]);
+
+  // 按一级和二级分类组织链接
   const linksByCategory = useMemo(() => {
     return filteredLinks.reduce((acc, link) => {
       const cat1 = link.category1;
@@ -66,63 +257,216 @@ export default function LinkContainer({
     }).replace(/\//g, '-');
   };
 
+  const searchResultCount = searchKeyword.trim() ? filteredLinks.length : 0;
+
+  // 动画变体
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut"
+      }
+    }
+  };
+
+  // 根据视图模式获取网格类名
+  const getGridClassName = () => {
+    switch (viewMode) {
+      case 'compact':
+        return "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2";
+      case 'list':
+        return "flex flex-col";
+      default:
+        return "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4";
+    }
+  };
+
+  // 根据视图模式获取间距类名
+  const getSpacingClassName = () => {
+    switch (viewMode) {
+      case 'compact':
+        return "space-y-8";
+      case 'list':
+        return "space-y-6";
+      default:
+        return "space-y-16";
+    }
+  };
+
   return (
-    <div className="space-y-16 pb-12 w-full min-w-0">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className={cn(getSpacingClassName(), "pb-12 w-full min-w-0")}
+    >
+      {/* 搜索结果提示 */}
+      <AnimatePresence>
+        {searchKeyword.trim() && (
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="text-center py-4 px-6 bg-card/50 backdrop-blur-sm rounded-xl border border-border/40"
+          >
+            <p className="text-sm text-muted-foreground" style={{ fontFamily: 'var(--font-body)' }}>
+              搜索 "<span className="font-medium text-foreground">{searchKeyword}</span>" 
+              {searchResultCount > 0 ? (
+                <span>，找到 <span className="font-semibold text-primary">{searchResultCount}</span> 个结果</span>
+              ) : (
+                <span className="text-destructive">，未找到匹配的书签</span>
+              )}
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {categories.map((category) => {
         const categoryLinks = linksByCategory[category.name];
         if (!categoryLinks) return null;
 
-        return (
-          <section key={category.id} id={category.id} className="space-y-8">
-            <div className="flex items-center space-x-3 pb-2 border-b">
-              {category.iconName &&
-              Icons[category.iconName as keyof typeof Icons] ? (
-                <div className="w-7 h-7 p-1 rounded-lg bg-primary/5 text-primary">
-                  {React.createElement(
-                    Icons[
-                      category.iconName as keyof typeof Icons
-                    ] as React.ComponentType<{ className: string }>,
-                    { className: "w-5 h-5" }
-                  )}
-                </div>
-              ) : null}
-              <h2 className="text-2xl font-bold tracking-tight">{category.name}</h2>
-            </div>
+        const linkCount = Object.values(categoryLinks).flat().length;
 
-            <div className="space-y-12">
-              {Object.entries(categoryLinks).map(([subCategory, links]) => (
-                <div
-                  key={`${category.id}-${subCategory
-                    .toLowerCase()
-                    .replace(/\s+/g, "-")}`}
-                  id={`${category.id}-${subCategory
-                    .toLowerCase()
-                    .replace(/\s+/g, "-")}`}
-                  className="space-y-4"
+        return (
+          <motion.section
+            key={category.id}
+            id={category.id}
+            variants={itemVariants}
+            className="space-y-6 relative"
+          >
+            {/* 粘性分类标题 */}
+            <StickyCategoryHeader
+              category={category}
+              linkCount={linkCount}
+            />
+
+            {/* 子分类 */}
+            <div className={cn(viewMode === 'compact' ? "space-y-6" : viewMode === 'list' ? "space-y-4" : "space-y-10", "pt-2")}>
+              {Object.entries(categoryLinks).map(([subCategory, links], subIndex) => (
+                <motion.div
+                  key={`${category.id}-${subCategory.toLowerCase().replace(/\s+/g, "-")}`}
+                  id={`${category.id}-${subCategory.toLowerCase().replace(/\s+/g, "-")}`}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: subIndex * 0.05 }}
+                  className={cn(viewMode === 'compact' ? "space-y-2" : viewMode === 'list' ? "space-y-1" : "space-y-4")}
                 >
-                  <div className="flex items-center space-x-2">
-                    <div className="w-1 h-1 rounded-full bg-primary"></div>
-                    <h3 className="text-lg font-medium text-foreground/90">
+                  {/* 子分类标题 */}
+                  <div className={cn(
+                    "flex items-center gap-3",
+                    viewMode === 'list' ? "pl-1" : "pl-2"
+                  )}>
+                    <div className={cn(
+                      "rounded-full bg-primary/60",
+                      viewMode === 'list' ? "w-1 h-1" : "w-1.5 h-1.5"
+                    )}></div>
+                    <h3
+                      className={cn(
+                        "font-medium text-foreground/90",
+                        viewMode === 'compact' ? "text-base" : viewMode === 'list' ? "text-sm" : "text-lg"
+                      )}
+                      style={{ fontFamily: 'var(--font-display)' }}
+                    >
                       {subCategory}
                     </h3>
-                    <div className="text-sm text-muted-foreground">({links.length})</div>
+                    <div className={cn(
+                      "text-muted-foreground bg-muted/30 rounded-full",
+                      viewMode === 'list' ? "text-[10px] px-1.5 py-0" : "text-xs px-2 py-0.5"
+                    )}>
+                      {links.length}
+                    </div>
+                    <div className="flex-1 h-px bg-gradient-to-r from-border/50 to-transparent"></div>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 w-full">
-                    {links.map((link) => (
-                      <LinkCard key={link.id} link={link} className="w-full" />
+                  
+                  {/* 链接卡片 - 根据视图模式渲染不同组件 */}
+                  <div className={cn(getGridClassName(), "w-full")}>
+                    {links.map((link, linkIndex) => (
+                      <motion.div
+                        key={link.id}
+                        initial={{ opacity: 0, scale: viewMode === 'list' ? 1 : 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: linkIndex * (viewMode === 'list' ? 0.01 : 0.03) }}
+                      >
+                        {viewMode === 'normal' && (
+                          <LinkCard link={link} className="w-full h-full" />
+                        )}
+                        {viewMode === 'compact' && (
+                          <CompactLinkCard link={link} />
+                        )}
+                        {viewMode === 'list' && (
+                          <ListLinkItem link={link} />
+                        )}
+                      </motion.div>
                     ))}
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
-          </section>
+          </motion.section>
         );
       })}
-      {mounted && currentTime && (
-        <div className="mt-12 text-center text-sm text-muted-foreground">
-          最近更新：{formatDate(currentTime)}
-        </div>
+
+      {/* 无搜索结果时的空状态 */}
+      <AnimatePresence>
+        {searchKeyword.trim() && searchResultCount === 0 && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="text-center py-16"
+          >
+            <motion.div 
+              animate={{ y: [0, -10, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="text-6xl mb-6"
+            >
+              🔍
+            </motion.div>
+            <h3 
+              className="text-xl font-semibold text-foreground mb-3"
+              style={{ fontFamily: 'var(--font-display)' }}
+            >
+              未找到匹配的书签
+            </h3>
+            <p className="text-sm text-muted-foreground max-w-md mx-auto">
+              尝试使用不同的关键词搜索，或者切换到浏览器搜索模式探索更多内容
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 底部更新时间 */}
+      {mounted && currentTime && !searchKeyword.trim() && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="mt-16 text-center"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/30 border border-border/30">
+            <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+            <span 
+              className="text-sm text-muted-foreground"
+              style={{ fontFamily: 'var(--font-body)' }}
+            >
+              最近更新：{formatDate(currentTime)}
+            </span>
+          </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }
